@@ -114,14 +114,13 @@ svg use:nth-child(5) {
     justify-content: space-between;
     padding: .25em .5em;
     cursor: pointer;
+    border-radius: 5px;
 }
 .torrents .episodeHeader:hover {
     color: var(--color2);
     background-color: var(--color3);
     border-color: var(--color3);
     transition: background-color .2s ease-in-out, color .2s ease-in-out;
-    border: 2px solid var(--color3);
-    border-radius: 5px;
 }
 .torrents #btnShowTorrents:hover{
     color: var(--color2);
@@ -136,7 +135,8 @@ svg use:nth-child(5) {
 .torrents #TorrentFilters .flagCategory{
     display: contents;
 }
-.torrents #TorrentFilters .flagCategory button.btn {
+.torrents #TorrentFilters .flagCategory button.btn,
+.torrents .episodeHeader button.btn {
     cursor: pointer;
     color: var(--color3);
     background-color: var(--color1);    
@@ -144,6 +144,13 @@ svg use:nth-child(5) {
     transition: background-color .2s ease-in-out, color .2s ease-in-out;
     border: 2px solid var(--color2);
     border-radius: 5px;
+    z-index: 2;
+}
+.torrents .episodeHeader button.btn:hover{
+    background-color: var(--color2);    
+}
+.torrents .episodeHeader button.btn.selected{
+    background-color: var(--color2);    
 }
 .torrents #TorrentFilters .flagCategory button.btn:hover {
     color: var(--color2);
@@ -163,12 +170,10 @@ svg use:nth-child(5) {
     /* border: 2px solid var(--color3); */
     /* border-radius: 16px; */
 }
-.torrents .episodesList.show{
-    color: var(--color2);
-    background-color: var(--color3);
-    border-color: var(--color3);
-}
-.torrents #TorrentsList.show, .torrents .episodesList.show{
+.torrents #TorrentsList.show,
+.torrents .episodesList.show, 
+.torrents .episodesList .episode .torrentsList.show,
+.torrents .episodesList .episode .torrentsList .torrent:not(div.header).show{
     display: block!important;
 }
 .torrents #TorrentListHeader{
@@ -245,16 +250,16 @@ svg use:nth-child(5) {
     height: 30px;
 }
 #TorrentsList .torrent .flags .fullhd {
-    background-image: url(1080.png);
+    background-image: url(../public/1080.png);
 }
 #TorrentsList .torrent .flags .hd {
-    background-image: url(720.png);
+    background-image: url(../public/720.png);
 }
 #TorrentsList .torrent .flags .hevc {
-    background-image: url(MMHEVC.png);
+    background-image: url(../public/MMHEVC.png);
 }
 #TorrentsList .torrent .flags .uhd {
-    background-image: url(MM4K.png);
+    background-image: url(../public/MM4K.png);
 }
 .torrents #TorrentsList  .torrent.hide{
     display: none;

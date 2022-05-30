@@ -15,7 +15,7 @@ export default function SearchBar(){
 	let searchData = data;
 	
     async function GetData(){
-        const res = await fetch('http://localhost:3001/api/searchdata');
+        const res = await fetch('https://backend-watchflix.herokuapp.com/api/searchdata');
         const json = await res.json();
         setData(json);
     }

@@ -45,7 +45,7 @@ async function AddItems( page, obs, dispatch, limit=18) {
     const loader = document.querySelector(".loading");
     loader.classList.remove("hide");
 
-	const res = await fetch( `http://localhost:3001/api/newMovies?page=${ page.current }&limit=${limit}` );
+	const res = await fetch( `https://backend-watchflix.herokuapp.com/api/newMovies?page=${ page.current }&limit=${limit}` );
 	const json = await res.json();
     if( !json.length ){ obs.unobserve(document.querySelector("body .container .item:last-child")); return; }
 
@@ -54,7 +54,7 @@ async function AddItems( page, obs, dispatch, limit=18) {
 }
 
 export async function getServerSideProps(context) {
-	const res = await fetch("http://localhost:3001/api/newMovies?page=1&limit=20");
+	const res = await fetch("https://backend-watchflix.herokuapp.com/api/newMovies?page=1&limit=20");
 	const json = await res.json();
 	return {
 		props: {

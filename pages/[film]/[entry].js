@@ -2,31 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import TorrentScript from '../../components/torrentsScript';
 // import WebTorrent from 'webtorrent-hybrid';
 
-const Genre = {
-    1: "Drama",
-    2: "Mystery",
-    3: "Thriller",
-    4: "Comedy",
-    5: "Romance",
-    6: "Action",
-    7: "Horror",
-    8: "Crime",
-    9: "Sci-Fi",
-    10: "Documentary",
-    11: "Biography",
-    12: "Fantasy",
-    14: "Adventure",
-    15: "Animation",
-    16: "Family",
-    17: "History",
-    18: "Western",
-    19: "Music",
-    20: "Musical",
-    21: "War"
-}
 export default function Entry({data,torrentHTML,id,film}){
     useEffect(()=>{
-        if(document.querySelector("script.custom")) document.querySelector("script.custom").remove();
+        if(document.querySelector("script.custom")) {
+            document.querySelector("script.custom").remove(); 
+            return;
+        }
         const script = document.createElement("script");
         script.classList.add("custom");
         script.innerHTML = TorrentScript(film);

@@ -62,8 +62,13 @@ export default function TorrentScript(film){
                 const allTorrents = [...episode.querySelectorAll(".torrent:not(div#TorrentListHeader)")];
                 let allBtns = [...episode.querySelectorAll(".episodeHeader  .btn[data-flag]")];
                 let filters = [];
-                // console.log(allTorrents,allBtns)
 
+                episode.querySelector(".episodeHeader .title").addEventListener("click", ()=>{
+                    episode.querySelector(".torrentsList").classList.toggle("show");
+                    episode.querySelectorAll(".torrent:not(div.header)").forEach((torrent)=>{
+                        torrent.classList.toggle("show",  episode.querySelector(".torrentsList").classList.contains("show"));
+                    });
+                });
                 reset.addEventListener("click", ()=>{
                     filters = [];
                     reset.classList.add("selected");
@@ -88,6 +93,7 @@ export default function TorrentScript(film){
                         });
         
                         const torrents = [...episode.querySelectorAll(".torrentsList .torrent:not(div#TorrentListHeader)"+filters.join(""))];
+                        console.log(torrents)
                         torrents.forEach(torrent =>{
                             torrent.classList.toggle("hide", torrent.classList.contains(filters.join("")));
                         });

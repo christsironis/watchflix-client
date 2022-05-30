@@ -30,7 +30,7 @@ export default function Home({movies,series}) {
 }
 
 export async function getServerSideProps(context) {
-  const res = await Promise.all( [fetch('http://localhost:3001/api/newMovies?page=1&limit=18'), fetch('http://localhost:3001/api/newSeries?page=1&limit=18')]);
+  const res = await Promise.all( [fetch('https://backend-watchflix.herokuapp.com/api/newMovies?page=1&limit=18'), fetch('https://backend-watchflix.herokuapp.com/api/newSeries?page=1&limit=18')]);
   const json = await Promise.all( [res[0].json(), res[1].json()] );
   return {
     props: {
