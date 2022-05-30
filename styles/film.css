@@ -1,0 +1,287 @@
+.wrapper {
+    margin: 1em 0;
+    display: grid;
+    grid-template-rows: auto;
+    grid-auto-columns: 100%;
+    justify-items: center;
+    padding: 0 1em;
+    gap: 0 1em;
+}
+.wrapper .img {
+    width: 100%;
+}
+.wrapper .img img {
+    border-radius: 16px;
+    border: 2px solid var(--color2);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.wrapper > .title {
+    margin: 0 0 .5em 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+}
+.wrapper > .title h2{
+    margin: 0;
+    text-align: center;
+}
+.wrapper .aka{
+    font-weight: normal;
+}
+.wrapper .info {
+    text-align: justify;
+}
+.wrapper .info .desc {
+    margin: 1em 0;
+}
+.wrapper .details {
+    display: flex;
+    justify-content: center;
+    font-size: 1rem;
+    margin: 1em 0;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1em;
+}
+.wrapper .details > *:not(a){
+    position: relative;
+}
+.wrapper .details > *:not(a)::before {
+    content: "\2022";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
+    color: var(--color2); /* Change the color */
+    font-weight: bolder; /* If you want it to be bold */
+    display: inline-block; /* Needed to add space between the bullet and the text */
+    width: 1em; /* Also needed for space (tweak if needed) */
+    margin-left: -1em; /* Also needed for space (tweak if needed) */
+    padding-left: 0.5em;
+}
+
+.wrapper .rating {
+    display: flex;
+    /* width: 100%; */
+}
+.wrappersvg#imdb {
+    width: 50px;
+}
+.wrapper svg#imdb {
+    width: 50px;
+}
+.wrapper svg[data-rating] {
+    height: 20px;
+    margin: auto 10px;
+    width: 100px;
+}
+svg use:nth-child(2) {
+      transform: translate(20px);
+}
+svg use:nth-child(3) {
+      transform: translate(40px);
+}
+svg use:nth-child(4) {
+      transform: translate(60px);
+}
+svg use:nth-child(5) {
+      transform: translate(80px);
+}
+.torrents {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    max-width: 1920px;
+    margin-bottom: 2em;
+    width: 100%;
+}
+.torrents #TorrentsList{
+    width: 100%;
+}
+.torrents .season{
+    width: 100%;
+}
+.torrents #btnShowTorrents, .torrents .season .seasonTitle{
+    padding: 1em 2em;
+    cursor: pointer;
+    color: var(--color3);
+    border: 2px solid var(--color2);
+    border-radius: 16px;
+    margin: 1em 0;
+}
+.torrents .episodeHeader{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: .25em .5em;
+    cursor: pointer;
+}
+.torrents .episodeHeader:hover {
+    color: var(--color2);
+    background-color: var(--color3);
+    border-color: var(--color3);
+    transition: background-color .2s ease-in-out, color .2s ease-in-out;
+    border: 2px solid var(--color3);
+    border-radius: 5px;
+}
+.torrents #btnShowTorrents:hover{
+    color: var(--color2);
+    background-color: var(--color3);
+    border-color: var(--color3);
+}
+.torrents #TorrentFilters{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+}
+.torrents #TorrentFilters .flagCategory{
+    display: contents;
+}
+.torrents #TorrentFilters .flagCategory button.btn {
+    cursor: pointer;
+    color: var(--color3);
+    background-color: var(--color1);    
+    padding: 0.2em 0.5em;
+    transition: background-color .2s ease-in-out, color .2s ease-in-out;
+    border: 2px solid var(--color2);
+    border-radius: 5px;
+}
+.torrents #TorrentFilters .flagCategory button.btn:hover {
+    color: var(--color2);
+    background-color: var(--color3);
+    border-color: var(--color3);
+}
+.torrents #TorrentFilters .flagCategory button.btn.selected {
+    color: var(--color2);
+    background-color: var(--color3);
+    border-color: var(--color3);
+}
+.torrents #Multiselect{
+    display: none;
+}
+.torrents #TorrentsList.show{
+    padding: 1em;
+    /* border: 2px solid var(--color3); */
+    /* border-radius: 16px; */
+}
+.torrents .episodesList.show{
+    color: var(--color2);
+    background-color: var(--color3);
+    border-color: var(--color3);
+}
+.torrents #TorrentsList.show, .torrents .episodesList.show{
+    display: block!important;
+}
+.torrents #TorrentListHeader{
+    border-radius: 5px;
+    margin: 0.5em 0px;
+    color: var(--color3);
+    text-decoration: none;
+    display: flex;
+    background-color: var(--color1);
+    align-items: center;
+    flex-wrap: wrap;
+}
+.torrents .info {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    align-items: center;
+}
+#TorrentsList .torrent:not(div.header){
+    border-radius: 5px;
+    margin: 0.5em 0;
+    color: var(--color3);
+    padding: 0.5em 1em;
+    text-decoration: none;
+    display: flex;
+    font-size: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    cursor: pointer;
+}
+#TorrentsList .torrent:not(div.header):hover{
+    color: var(--color2);
+    background-color: var(--color3);
+    border-color: var(--color3);
+}
+#TorrentsList .torrent:not(div.header):hover .size{
+    color: var(--color2);
+    background-color: var(--color3);
+    border-color: var(--color3);
+}
+#TorrentsList .torrent:not(div.header) .size {
+    color: var(--color1);
+    border-radius: 5px;
+    white-space: nowrap;
+    background-color: #fff;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    padding: .5em;
+    height: 30px;
+    width: 80px;
+}
+#TorrentsList .torrent .date {
+    padding: 0.5em 1em;
+    white-space: nowrap;
+}
+#TorrentsList .torrent .seed{
+    display: none;
+}
+#TorrentListHeader.torrent .flags{
+    display: none;
+}
+#TorrentsList .torrent .flags .fullhd,
+#TorrentsList .torrent .flags .hd,
+#TorrentsList .torrent .flags .hevc,
+#TorrentsList .torrent .flags .uhd
+{
+    display: inline-block;
+    width: 32px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    height: 30px;
+}
+#TorrentsList .torrent .flags .fullhd {
+    background-image: url(1080.png);
+}
+#TorrentsList .torrent .flags .hd {
+    background-image: url(720.png);
+}
+#TorrentsList .torrent .flags .hevc {
+    background-image: url(MMHEVC.png);
+}
+#TorrentsList .torrent .flags .uhd {
+    background-image: url(MM4K.png);
+}
+.torrents #TorrentsList  .torrent.hide{
+    display: none;
+}
+
+@media screen and (min-width: 768px){
+    .wrapper {
+        grid-template-columns: 1fr 1fr;
+    }
+    .wrapper > .title {
+        grid-column: 1 / -1;
+    }
+    .wrapper .img {
+        /* width: 80%; */
+    }
+    .torrents{
+        grid-column: 1 / -1;
+    }
+  }
+@media screen and (min-width: 1024px){
+    .wrapper{
+        padding: 0;
+        grid-template-columns: .5fr 1fr;
+    }
+    .wrapper > .title {
+        /* grid-column: 1 / -1; */
+        width: 100%;
+    }
+
+  }
