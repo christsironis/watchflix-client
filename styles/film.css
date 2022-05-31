@@ -1,3 +1,17 @@
+.popup{
+    /* display: none; */
+    position: fixed;
+    width: clamp(200px,80%,960px);
+    height: 400px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background-color: var(--color1);
+    padding: 1em;
+    border: 2px solid var(--color2);
+    border-radius: 16px;
+    z-index: 2;
+}
 .wrapper {
     margin: 1em 0;
     display: grid;
@@ -107,16 +121,27 @@ svg use:nth-child(5) {
     border: 2px solid var(--color2);
     border-radius: 16px;
     margin: 1em 0;
+    transition: background .2s ease-in-out;
+}
+.torrents #btnShowTorrents, .torrents .season .seasonTitle.selected{
+    background: var(--color2);
 }
 .torrents .episodeHeader{
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     padding: .25em .5em;
+}
+.torrents .episodeHeader .title{
+    padding: .25em .5em;
     cursor: pointer;
     border-radius: 5px;
 }
-.torrents .episodeHeader:hover {
+.torrents .episode .torrentsList{
+    padding: 0 1em;
+}
+.episodeHeader .title.selected,
+.torrents .episodeHeader .title:hover {
     color: var(--color2);
     background-color: var(--color3);
     border-color: var(--color3);
@@ -172,9 +197,11 @@ svg use:nth-child(5) {
 }
 .torrents #TorrentsList.show,
 .torrents .episodesList.show, 
-.torrents .episodesList .episode .torrentsList.show,
-.torrents .episodesList .episode .torrentsList .torrent:not(div.header).show{
+.torrents .episodesList .episode .torrentsList.show{
     display: block!important;
+}
+.torrents .episodesList .episode .torrentsList .torrent:not(div.header).show{
+    display: flex!important;
 }
 .torrents #TorrentListHeader{
     border-radius: 5px;
@@ -261,8 +288,9 @@ svg use:nth-child(5) {
 #TorrentsList .torrent .flags .uhd {
     background-image: url(../public/MM4K.png);
 }
-.torrents #TorrentsList  .torrent.hide{
-    display: none;
+.torrents #TorrentsList .torrent.hide,
+.torrents #TorrentsList .torrent.hide{
+    display: none!important;
 }
 
 @media screen and (min-width: 768px){

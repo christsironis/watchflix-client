@@ -69,7 +69,7 @@ export default function SearchBar(){
 			</div>
 			<div className='hide' id="results">
 				{resutls.length===0 ? "No results": resutls.slice(0,10).map((item,index)=>{
-					return <Link href={`/${item[0]}`}><a onMouseDown={()=> router.push("/"+item[0])} key={item[0]} className="searchItem"><span className='mainTitle'>{item[1]}</span><span>{item[2] ? " / "+ item[2] : "" }</span></a></Link>
+					return <Link href={`/${item[0]}`}  key={item[0]}><a onMouseDown={()=> router.push("/"+item[0])} className="searchItem"><span className='mainTitle'>{item[1]}</span><span>{item[2] ? " / "+ item[2] : "" }</span></a></Link>
 				})}
 			</div>
 		</div>

@@ -51,20 +51,22 @@ export default function TorrentScript(film){
         seasonListBtn.forEach((season)=>{
             const list = season.querySelector(".episodesList");
             const btn = season.querySelector(".seasonTitle");
-            console.log(season,list,btn)
+
             btn.addEventListener("click", ()=>{
                 list.classList.toggle("show");
+                btn.classList.toggle("selected");
             });
             const episodeList = [...season.querySelectorAll(".episode")];
 
             episodeList.forEach((episode)=>{
-                const reset = episode.querySelector(".episodeHeader .btn:not([data-flag=''])");
+                const reset = episode.querySelector(".episodeHeader .btn[data-flag='']");
                 const allTorrents = [...episode.querySelectorAll(".torrent:not(div#TorrentListHeader)")];
-                let allBtns = [...episode.querySelectorAll(".episodeHeader  .btn[data-flag]")];
+                let allBtns = [...episode.querySelectorAll(".episodeHeader  .btn:not([data-flag=''])")];
                 let filters = [];
 
                 episode.querySelector(".episodeHeader .title").addEventListener("click", ()=>{
                     episode.querySelector(".torrentsList").classList.toggle("show");
+                    episode.querySelector(".episodeHeader .title").classList.toggle("selected");
                     episode.querySelectorAll(".torrent:not(div.header)").forEach((torrent)=>{
                         torrent.classList.toggle("show",  episode.querySelector(".torrentsList").classList.contains("show"));
                     });
