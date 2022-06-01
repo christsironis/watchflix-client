@@ -1,5 +1,5 @@
 .popup{
-    /* display: none; */
+    display: none;
     position: fixed;
     width: clamp(200px,80%,960px);
     height: 400px;

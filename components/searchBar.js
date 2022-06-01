@@ -58,7 +58,7 @@ export default function SearchBar(){
 	}
 	return <>
 		<div id="searchCont">
-				<div>{filteredData.current.length}</div>
+				{/* <div>{filteredData.current.length}</div> */}
 			<div className="searchBar">
 				<input type="search" onInput={Search} onFocus={()=>ToggleClass("hide", false)} onBlur={()=>ToggleClass("hide", true)} value={query} placeholder="Search..." />
 				<div className="button">
@@ -68,8 +68,8 @@ export default function SearchBar(){
 				</div>
 			</div>
 			<div className='hide' id="results">
-				{resutls.length===0 ? "No results": resutls.slice(0,10).map((item,index)=>{
-					return <Link href={`/${item[0]}`}  key={item[0]}><a onMouseDown={()=> router.push("/"+item[0])} className="searchItem"><span className='mainTitle'>{item[1]}</span><span>{item[2] ? " / "+ item[2] : "" }</span></a></Link>
+				{resutls.length===0 ? "No results": resutls.slice(0,10).map((item)=>{
+					return <Link href={`/`}  key={item[0]}><a onMouseDown={()=> router.push("/movie/"+item[0])} className="searchItem"><span className='mainTitle'>{item[1]}</span><span>{item[2] ? " / "+ item[2] : "" }</span></a></Link>
 				})}
 			</div>
 		</div>
