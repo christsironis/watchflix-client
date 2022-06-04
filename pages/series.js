@@ -2,12 +2,12 @@ import Item from "../components/item.js"
 import React, { useEffect, useRef, useState, useReducer } from 'react';
 
 export default function Series({json}){
-    const [ data, dispatch] = useReducer( reducer, json );
+    const [ data, setData] = useState( json );
     const page = useRef(1);
 
 	useEffect(() => {
         const observer = new IntersectionObserver( (item) => {
-            item.forEach( (entry) => { if( entry.isIntersecting ) AddItems(page, observer, dispatch); } );
+            item.forEach( (entry) => { if( entry.isIntersecting ) AddItems(page, observer, setData); } );
         },
         { root: null, rootMargin: "0px", threshold: 0.05 }
 		);
@@ -34,9 +34,7 @@ export default function Series({json}){
         </>
     );
 }
-function reducer(state, action) {
-    return [...state,...action];
-}
+
 async function AddItems( page, obs, dispatch, limit=18) {
     obs.unobserve(document.querySelector("body .container .item:last-child"));
     page.current+=1;
@@ -49,7 +47,7 @@ async function AddItems( page, obs, dispatch, limit=18) {
     if( !json.length ){ obs.unobserve(document.querySelector("body .container .item:last-child")); return; }
 
     loader.classList.add("hide");
-    dispatch(json);
+    dispatch((previous)=> [...previous,...json]);
 }
 
 export async function getStaticProps() {
