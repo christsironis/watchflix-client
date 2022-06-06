@@ -1,4 +1,5 @@
 export default function TorrentScript(film){
+    document.querySelector(".torrents").innerHTML = document.querySelector(".torrents").innerHTML; 
     let torrentHTML;
     if(film==="movie"){
         torrentHTML= `

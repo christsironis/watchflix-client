@@ -1,10 +1,9 @@
-import { useState, useRef ,useEffect, useMemo, useDeferredValue} from 'react';
+import { useState, useRef ,useEffect, useMemo, useDeferredValue, useCallback} from 'react';
 import { useRouter } from 'next/router'
 import Link from 'next/link';
 
 export default function SearchBar(){
-	const data = useMemo( ()=> useDeferredValue( GetData()), [] ) ;
-	// const [data,setData] = useState(false);
+	const [data, setData] = useState(false);
 	const router = useRouter();
 	const [query, setQuery] = useState("");
 	const [resutls, setResutls] = useState([]);
@@ -12,13 +11,13 @@ export default function SearchBar(){
 	const filteredData = useRef([]);
 	const shouldWait = useRef(true);
 	const TimeoutID = useRef(0);
-    
-	let searchData = data;
-	console.log(searchData)
+	useMemo( ()=> GetData() , [] );
+    let searchData = data;
+
     async function GetData(){
         const res = await fetch('https://backend-watchflix.herokuapp.com/api/searchdata');
         const json = await res.json();
-        return json;
+        setData(json);
     }
 	const TimeoutFunc = (event) => {
 		shouldWait.current = false;

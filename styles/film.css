@@ -8,9 +8,70 @@
     transform: translate(-50%,-50%);
     background-color: var(--color1);
     padding: 1em;
-    border: 2px solid var(--color2);
+    border: 5px solid var(--color2);
     border-radius: 16px;
-    z-index: 2;
+    z-index: 3;
+    touch-action: none;
+    flex-direction: column;
+    align-content: center;
+    justify-content: space-between;
+}
+.popup #closeIcon{
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 50px;
+    height: 50px;
+    fill: var(--color2);
+    cursor: pointer;
+}
+.openPopup{
+    display: flex;
+}
+.popup .input {
+    position: relative;
+    line-height: 0;
+}
+.popup .input input{
+    font-size: 1.4rem;
+    width: 100%;
+    border: 5px solid white;
+    border-radius: 5px;
+}
+.popup .buttons{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+.popup .buttons button {
+    border: 2px solid var(--color2);
+    border-radius: 5px;
+    background: var(--color1);
+    color: var(--color3);
+    padding: .4em 0.8em;
+    font-size: clamp(1rem,5vw,1.5rem);
+}
+.popup .buttons button:hover {
+    border-color: var(--color3);
+    background: var(--color3);
+    color: var(--color2);
+    cursor: pointer;
+}
+.popup  svg#copy {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 70px;
+    height: 90%;
+    padding: 5px 0;
+    transform: translateY(-50%);
+    fill: var(--color1);
+    cursor: pointer;
+    background-color: var(--color3);
+}
+.popup  svg#copy:hover {
+    fill: var(--color2);
+    background-color: var(--color3);
 }
 .wrapper {
     margin: 1em 0;

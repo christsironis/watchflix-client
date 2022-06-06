@@ -67,6 +67,10 @@ header{
   position: relative;
   transform: translateX(8px);
 }
+.logo a{
+  text-decoration: none;
+  color: white;
+}
 .logo::after {
   content: "";
   position: absolute;

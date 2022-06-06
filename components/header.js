@@ -6,7 +6,7 @@ export default function Header({children}){
     return <>
         <header id='header'>
 			<div className="logo">
-				WatchFlix
+				<Link href="/">WatchFlix</Link>
 			</div>
 			<div className="cont">
 				<div className="menu">
