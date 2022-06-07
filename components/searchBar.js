@@ -1,17 +1,16 @@
-import { useState, useRef ,useEffect, useMemo, useDeferredValue, useCallback} from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/router'
 import Link from 'next/link';
 
 export default function SearchBar(){
-	const [data, setData] = useState(false);
-	const router = useRouter();
+	const [data, setData] = useState( ()=> GetData() );
 	const [query, setQuery] = useState("");
 	const [resutls, setResutls] = useState([]);
+	const router = useRouter();
 	const oldQuery = useRef("");
 	const filteredData = useRef([]);
 	const shouldWait = useRef(true);
 	const TimeoutID = useRef(0);
-	useMemo( ()=> GetData() , [] );
     let searchData = data;
 
     async function GetData(){

@@ -4,13 +4,14 @@ import '../styles/film.css';
 import Layout from '../components/layouts/Layout';
 
 function MyApp({ Component, pageProps }) {
-  console.log(Component.getLayout)
-  if(Component.getLayout){
+  if(Component.getLayout instanceof Function){
     return Component.getLayout();
-  }else{
-    return   <Layout>
-              <Component {...pageProps} />
-            </Layout>
+  }
+  else{
+    return  <>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout></>
   }
 }
 
