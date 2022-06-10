@@ -1,0 +1,103 @@
+/* body{
+    background-size: cover;
+    background-image: url(../public/bg.jpg);
+} */
+.boxContainer {
+    position: relative;
+    width: clamp(200px,80%,1200px);
+    border-radius: 20px;
+    padding: 50px 40px;
+    margin: 50px auto;
+    box-sizing: border-box;
+    background: #171717;
+    box-shadow: 0px 0px 8px 8px var(--color2);
+}
+.boxContainer form{    
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 20px;
+}
+.boxContainer h2, .boxContainer label{
+    margin-bottom: 0;
+    margin-top: 30px;
+}
+.boxContainer label,
+.boxContainer input,
+.boxContainer button {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.boxContainer input {
+    -webkit-text-fill-color: #747474;
+    transition: background-color 5000s ease-in-out 0s;
+    position: relative;
+    font-family: "Montserrat", sans-serif;
+    letter-spacing: -0.2px;
+    color: #747474;
+    text-shadow: 1px 1px 0 #000;
+    margin: 20px 0px 0 0;
+    background: #171717;
+    text-align: center;
+    height: 50px;
+    font-size: 36px;
+    border-radius: 16px;
+    box-shadow: inset 6px 6px 6px #0e0e0e, inset -3px -3px 6px 2px #2c2c2c,
+        -3px -5px 3px 1px #000000, -2px -3px 3px 2px #2c2c2c, 1px 0px 3px 2px #2c2c2c;
+}
+.boxContainer label input:-webkit-autofill,
+.boxContainer label input:autofill {
+    background-color: transparent!important;
+}
+.boxContainer label span {
+    font-size: 13px;
+    color: #bdbdbd;
+}
+.boxContainer label {
+    /* margin: 30px 0px; */
+    font-size: 20px;
+    text-align: center;
+}
+.boxContainer .boxes{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: clamp(200px,40%,900px);
+}
+.boxContainer .boxes form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.boxContainer .boxes input.join{
+    margin-top: 50px;
+}
+.boxContainer button {
+    font-size: 1.4rem;
+    width: 50%;
+    margin-top: 40px;
+    background: var(--color3);
+    color: var(--color2);
+    height: 40px;
+    border-radius: 16px;
+    cursor: pointer;
+    font-weight: 900;
+    box-shadow: none;
+    transition: 0.5s ease-in-out;
+}
+.boxContainer button:hover{
+    background: var(--color2);
+    color: var(--color3);
+}
+.boxContainer input[name="username"]{
+    margin: 0 25%;
+}
+.boxContainer .boxes button#but_join{
+    margin-top: auto;
+}

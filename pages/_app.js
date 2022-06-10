@@ -1,6 +1,7 @@
 import '../styles/global.css';
 import '../styles/index.css';
 import '../styles/film.css';
+import '../styles/lobby.css';
 import '../styles/room.css';
 import Layout from '../components/layouts/Layout';
 

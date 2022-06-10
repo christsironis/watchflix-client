@@ -40,11 +40,12 @@ export default function Entry({data,torrentHTML,id,film}){
         }
     });
     function WatchFun(){
-        const title = document.querySelector(".popup .name").innerHTML;
+        const title = document.querySelector(".wrapper .title h2").innerHTML;
         const url = document.querySelector(".popup .input #link").value;
-        const regex = new RegExp(/:btih:[^&"]+&/i);
-        localStorage.setItem("magnetData", JSON.stringify({ title: title, url: url, hash: regex.exec(url)[0] }));
-        Router.push("/room");
+        const regex = new RegExp(/(?<=:btih:)[^&"]+/i);
+        const oldStorage = JSON.parse(localStorage.getItem("watchflix"));
+        localStorage.setItem("watchflix", JSON.stringify({...oldStorage, title: title, magnet: url, hash: regex.exec(url)[0] }));
+        Router.push("/lobby");
     }
 
     return (

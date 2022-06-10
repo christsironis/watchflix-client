@@ -7,11 +7,11 @@ export default function Layouts({ children }) {
         window.onscroll = function () {
             let arrow = document.querySelector("#arrow");
             if ( document.documentElement.scrollTop > 500 ) {
-                arrow.classList.add("arrowDisp");
-                arrow.classList.remove("arrowDisap");
+                arrow?.classList?.add?.("arrowDisp");
+                arrow?.classList?.remove?.("arrowDisap");
             } else {
-                arrow.classList.remove("arrowDisp");
-                arrow.classList.add("arrowDisap");
+                arrow?.classList?.remove?.("arrowDisp");
+                arrow?.classList?.add?.("arrowDisap");
             }
         }
     },[]);
