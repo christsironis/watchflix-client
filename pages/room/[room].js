@@ -7,7 +7,7 @@ import { io } from "socket.io-client";
 
 export default function Room(){
 	useEffect(()=>{
-		const socket = io("http://localhost:3001/", {transports: ['websocket','polling']});
+		const socket = io(process.env.SERVER, {transports: ['websocket','polling']});
 		setInterval(() => {
 			const start = Date.now();
 		  
