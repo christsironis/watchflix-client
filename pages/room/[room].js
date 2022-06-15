@@ -5,9 +5,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import WebTorrent from 'webtorrent-hybrid';
 import { io } from "socket.io-client";
 
+const socket = io(process.env.SERVER, {transports: ['websocket','polling']});
 export default function Room(){
 	useEffect(()=>{
-		const socket = io(process.env.SERVER, {transports: ['websocket','polling']});
 		setInterval(() => {
 			const start = Date.now();
 		  

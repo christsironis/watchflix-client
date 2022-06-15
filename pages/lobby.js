@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 // import WebTorrent from 'webtorrent-hybrid';
 
 export default function Lobby(){
+	const server = useRef(process.env.SERVER);
 	useEffect(()=>{
 		const localStor = JSON.parse(localStorage.getItem("watchflix"));
 		const createBut = document.querySelector(".boxContainer #but_create");
@@ -19,6 +20,28 @@ export default function Lobby(){
 			joinBut.removeEventListener("click", JoinRoom);
 		}
 	},[]);
+	
+	function CreateRoom(e){
+		e.preventDefault();
+		const inputs = [...document.querySelectorAll(".boxContainer .create")];
+		if( inputs.every((input)=> input.value === null || input.value == "" ) ) return;
+		const localStor = JSON.parse(localStorage.getItem("watchflix"));
+		const formData = new FormData(document.querySelector("#room"));
+		const values = Object.fromEntries(formData.entries());
+		delete values["room"];
+		localStorage.setItem("watchflix", JSON.stringify({...localStor , ...values }));
+		console.log(server.current+"/socket/getroom")
+		fetch(server.current+"/socket/getroom",{
+			method:'POST',
+			// redirect: 'follow',
+			headers: {
+				'Content-Type': 'application/json'
+				// 'Content-Type': 'application/x-www-form-urlencoded',
+			},
+			body: JSON.stringify({...localStor , ...values }),
+		}).then(res => {console.log(res);if (res.redirected) { Router.push(res.url); }} );
+		// document.querySelector(".boxContainer #room").submit();
+	}
     return (
         <>
         <div className="boxContainer">
@@ -45,26 +68,6 @@ export default function Lobby(){
     );
 }
 
-function CreateRoom(e){
-	e.preventDefault();
-	const inputs = [...document.querySelectorAll(".boxContainer .create")];
-	if( inputs.every((input)=> input.value === null || input.value == "" ) ) return;
-	const localStor = JSON.parse(localStorage.getItem("watchflix"));
-	const formData = new FormData(document.querySelector("#room"));
-	const values = Object.fromEntries(formData.entries());
-	delete values["room"];
-	localStorage.setItem("watchflix", JSON.stringify({...localStor , ...values }));
-	fetch(process.env.SERVER+"/socket/getroom",{
-		method:'POST',
-		redirect: 'follow',
-		headers: {
-			'Content-Type': 'application/json'
-			// 'Content-Type': 'application/x-www-form-urlencoded',
-		},
-		body: JSON.stringify({...localStor , ...values }),
-	}).then(res => {if (res.redirected) { Router.push(res.url); }} );
-	// document.querySelector(".boxContainer #room").submit();
-}
 function JoinRoom(e){
 	e.preventDefault();
 	const inputs = [...document.querySelectorAll(".boxContainer .join")];
