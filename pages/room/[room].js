@@ -1,12 +1,14 @@
 import Link from 'next/link';
 import Script from 'next/script';
-import Router from 'next/router';
+import Router,{ useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react';
+import { setCookies, getCookie, removeCookies } from 'cookies-next';
 import WebTorrent from 'webtorrent-hybrid';
 import { io } from "socket.io-client";
 
 const socket = io(process.env.SERVER, {transports: ['websocket','polling']});
-export default function Room(){
+export default function Room({cookies}){
+	const router = useRouter();
 	useEffect(()=>{
 		setInterval(() => {
 			const start = Date.now();
@@ -47,7 +49,7 @@ export default function Room(){
     return (
         <>
 
-		<div>asdlfkj</div>
+		<div>{router.asPath} asdlfkj</div>
 
         </>
     );
@@ -72,6 +74,26 @@ function JoinRoom(e){
 	localStorage.setItem("watchflix", JSON.stringify({...localStor , ...values }));
 	document.querySelector(".boxContainer #room").submit();
 }
+
+export async function getServerSideProps({req, params, res}) {
+	const cookie = JSON.parse(req.cookies.watchflix ?? null);
+	console.log(cookie)
+	if( !cookie || !cookie?.room || cookie?.room != params.room ){ 
+		// console.log(res)
+		// setCookies('watchflix', JSON.stringify({...cookie , room: params.room }), { req, res, maxAge: 60 * 60 * 24 });
+		res.setHeader('location', '/lobby')
+		res.setHeader('redirected', true)
+		res.end()
+		return {props:{}}
+	}
+	console.log(req.cookies)
+	return {
+		props: {
+			cookies: cookie
+		},
+	};
+}
+
 Room.getLayout = function getLayout(page) {
     return         <>
         <header id='header'>

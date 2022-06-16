@@ -1,10 +1,11 @@
 import Link from 'next/link';
-import Router, { useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react';
+import { setCookies, getCookie, removeCookies } from 'cookies-next';
 // import WebTorrent from 'webtorrent-hybrid';
 
 export default function Lobby(){
-	const server = useRef(process.env.SERVER);
+	const router = useRouter();
 	useEffect(()=>{
 		const localStor = JSON.parse(localStorage.getItem("watchflix"));
 		const createBut = document.querySelector(".boxContainer #but_create");
@@ -20,28 +21,29 @@ export default function Lobby(){
 			joinBut.removeEventListener("click", JoinRoom);
 		}
 	},[]);
-	
 	function CreateRoom(e){
 		e.preventDefault();
-		const inputs = [...document.querySelectorAll(".boxContainer .create")];
-		if( inputs.every((input)=> input.value === null || input.value == "" ) ) return;
-		const localStor = JSON.parse(localStorage.getItem("watchflix"));
+		const localStor = JSON.parse(localStorage.getItem("watchflix") ?? null);
 		const formData = new FormData(document.querySelector("#room"));
 		const values = Object.fromEntries(formData.entries());
-		delete values["room"];
-		localStorage.setItem("watchflix", JSON.stringify({...localStor , ...values }));
-		console.log(server.current+"/socket/getroom")
-		fetch(server.current+"/socket/getroom",{
+	
+		fetch(process.env.SERVER+"/socket/createRoom",{
 			method:'POST',
-			// redirect: 'follow',
 			headers: {
 				'Content-Type': 'application/json'
 				// 'Content-Type': 'application/x-www-form-urlencoded',
 			},
 			body: JSON.stringify({...localStor , ...values }),
-		}).then(res => {console.log(res);if (res.redirected) { Router.push(res.url); }} );
-		// document.querySelector(".boxContainer #room").submit();
+		}).then(res => { 
+			if (res.redirected) {
+				router.push(res.url); 
+				return; 
+			}else{ 
+				return res.text();
+			}
+		}).then(res => { if (res) { alert(res); } });
 	}
+
     return (
         <>
         <div className="boxContainer">
@@ -70,12 +72,25 @@ export default function Lobby(){
 
 function JoinRoom(e){
 	e.preventDefault();
-	const inputs = [...document.querySelectorAll(".boxContainer .join")];
-	if( inputs.every((input)=> input.value === null || input.value == "" ) ) return;
+	const localStor = JSON.parse(getCookie("watchflix"));
 	const formData = new FormData(document.querySelector("#room"));
-	const values = Object.fromEntries(formData.entries());console.log(values)
-	localStorage.setItem("watchflix", JSON.stringify({...localStor , ...values }));
-	document.querySelector(".boxContainer #room").submit();
+	const values = Object.fromEntries(formData.entries());
+	
+	fetch(process.env.SERVER+"/socket/joinRoom",{
+		method:'POST',
+		headers: {
+			'Content-Type': 'application/json'
+			// 'Content-Type': 'application/x-www-form-urlencoded',
+		},
+		body: JSON.stringify({...localStor , ...values }),
+	}).then(res => { 
+		if (res.redirected) {
+			Router.push(res.url); 
+			return; 
+		}else{ 
+			return res.text();
+		}
+	}).then(res => { if (res) { alert(res); } });
 }
 Lobby.getLayout = function getLayout(page) {
     return         <>
