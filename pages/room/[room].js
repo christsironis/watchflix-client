@@ -39,7 +39,7 @@ export default function Room({cookies}){
 		});
 		return ()=>{
 			socket.emit("leave_room", { room: cookies.room, user: cookies.username});
-			socket.disconnect();
+			// socket.disconnect();
 		}
 	},[]);
     return (
