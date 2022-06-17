@@ -7,7 +7,7 @@ export default function Lobby(){
 	const router = useRouter();
 	const cookie = JSON.parse(getCookie("watchflix") ?? null);
 	useEffect(()=>{
-		if(cookie.error) { alert(cookie?.error); setCookies('watchflix',JSON.stringify( {...cookie, error: null}), { maxAge: 60 * 60 * 24 })  }
+		if(cookie?.error) { alert(cookie?.error); setCookies('watchflix',JSON.stringify( {...cookie, error: null}), { maxAge: 60 * 60 * 24 })  }
 		const localStor = JSON.parse(localStorage.getItem("watchflix") ?? null);
 		const createBut = document.querySelector(".boxContainer #but_create");
 		const joinBut = document.querySelector(".boxContainer #but_join");
