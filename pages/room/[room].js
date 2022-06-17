@@ -76,17 +76,34 @@ function JoinRoom(e){
 }
 
 export async function getServerSideProps({req, params, res}) {
-	const cookie = JSON.parse(req.cookies.watchflix ?? null);
-	console.log(cookie)
-	if( !cookie || !cookie?.room || cookie?.room != params.room ){ 
-		// console.log(res)
-		// setCookies('watchflix', JSON.stringify({...cookie , room: params.room }), { req, res, maxAge: 60 * 60 * 24 });
-		res.setHeader('location', '/lobby')
-		res.setHeader('redirected', true)
-		res.end()
-		return {props:{}}
+	const cookie = await JSON.parse(req.cookies["watchflix"] ?? null);
+	console.log("cookie ",cookie)
+	console.log( !cookie?.username || cookie?.room != params.room )
+	if( !cookie?.username || cookie?.room != params.room ){ 
+		setCookies('watchflix', JSON.stringify({...cookie , room: params.room }), { req, res, maxAge: 60 * 60 * 24 });
+		return {
+			redirect: {
+				destination: '/lobby',
+				permanent: true,
+			},
+		}
 	}
-	console.log(req.cookies)
+	const response = await fetch(process.env.SERVER+"/socket/roomExists",{
+		method:'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({room: params.room}),
+	});
+	if(!response.ok){
+		console.log("doesnt exists")
+		return {
+			redirect: {
+				destination: '/lobby',
+				permanent: true,
+			},
+		}
+	}
 	return {
 		props: {
 			cookies: cookie

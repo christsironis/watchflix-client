@@ -1,19 +1,20 @@
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import Router,{ useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react';
 import { setCookies, getCookie, removeCookies } from 'cookies-next';
 // import WebTorrent from 'webtorrent-hybrid';
 
 export default function Lobby(){
 	const router = useRouter();
+	const cookie = JSON.parse(getCookie("watchflix") ?? null);
 	useEffect(()=>{
-		const localStor = JSON.parse(localStorage.getItem("watchflix"));
+		const localStor = JSON.parse(localStorage.getItem("watchflix") ?? null);
 		const createBut = document.querySelector(".boxContainer #but_create");
 		const joinBut = document.querySelector(".boxContainer #but_join");
 		document.querySelector(".boxContainer input[name='title']").value = localStor?.title || null;
 		document.querySelector(".boxContainer input[name='magnet']").value = localStor?.magnet || null;
-		document.querySelector(".boxContainer input[name='username']").value = localStor?.username || null;
-		document.querySelector(".boxContainer input[name='room']").value = localStor?.room || null;
+		document.querySelector(".boxContainer input[name='username']").value = cookie?.username || null;
+		document.querySelector(".boxContainer input[name='room']").value = cookie?.room || null;
 		createBut.addEventListener("click", CreateRoom);
 		joinBut.addEventListener("click", JoinRoom);
 		return ()=>{
@@ -21,27 +22,27 @@ export default function Lobby(){
 			joinBut.removeEventListener("click", JoinRoom);
 		}
 	},[]);
-	function CreateRoom(e){
+	async function CreateRoom(e){
 		e.preventDefault();
 		const localStor = JSON.parse(localStorage.getItem("watchflix") ?? null);
 		const formData = new FormData(document.querySelector("#room"));
 		const values = Object.fromEntries(formData.entries());
 	
-		fetch(process.env.SERVER+"/socket/createRoom",{
+		const res = await fetch(process.env.SERVER+"/socket/createRoom",{
 			method:'POST',
 			headers: {
 				'Content-Type': 'application/json'
-				// 'Content-Type': 'application/x-www-form-urlencoded',
 			},
 			body: JSON.stringify({...localStor , ...values }),
-		}).then(res => { 
-			if (res.redirected) {
-				router.push(res.url); 
-				return; 
-			}else{ 
-				return res.text();
-			}
-		}).then(res => { if (res) { alert(res); } });
+		});
+		const data = await res.text();
+		if(res.ok){
+			setCookies('watchflix', {...localStor, room: data}, { maxAge: 60 * 60 * 24 }) 
+			router.push("/room/"+data); 
+		}else{
+			alert(data);
+			return;
+		}
 	}
 
     return (
@@ -70,28 +71,29 @@ export default function Lobby(){
     );
 }
 
-function JoinRoom(e){
+async function JoinRoom(e){
 	e.preventDefault();
-	const localStor = JSON.parse(getCookie("watchflix"));
+	const localStor = await JSON.parse(getCookie("watchflix"));
 	const formData = new FormData(document.querySelector("#room"));
 	const values = Object.fromEntries(formData.entries());
-	
-	fetch(process.env.SERVER+"/socket/joinRoom",{
+
+	const res = await fetch(process.env.SERVER+"/socket/joinRoom",{
 		method:'POST',
 		headers: {
 			'Content-Type': 'application/json'
-			// 'Content-Type': 'application/x-www-form-urlencoded',
 		},
 		body: JSON.stringify({...localStor , ...values }),
-	}).then(res => { 
-		if (res.redirected) {
-			Router.push(res.url); 
-			return; 
-		}else{ 
-			return res.text();
-		}
-	}).then(res => { if (res) { alert(res); } });
+	});
+	const data = await res.text();
+	if(res.ok){
+		setCookies('watchflix', {...localStor, room: data}, { maxAge: 60 * 60 * 24 }) 
+		Router.push("/room/"+data); 
+	}else{
+		alert(data);
+		return;
+	}
 }
+
 Lobby.getLayout = function getLayout(page) {
     return         <>
         <header id='header'>
