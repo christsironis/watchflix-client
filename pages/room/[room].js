@@ -1,49 +1,45 @@
 import Link from 'next/link';
 import Script from 'next/script';
-import Router,{ useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react';
 import { setCookies, getCookie, removeCookies } from 'cookies-next';
-import WebTorrent from 'webtorrent-hybrid';
 import { io } from "socket.io-client";
+import WebTorrent from 'webtorrent-hybrid';
 
-const socket = io(process.env.SERVER, {transports: ['websocket','polling']});
+
 export default function Room({cookies}){
 	const router = useRouter();
 	useEffect(()=>{
+		const socket = io(process.env.SERVER, {transports: ['websocket','polling']});
 		setInterval(() => {
 			const start = Date.now();
 		  
 			socket.emit("ping", () => {
 			  const duration = Date.now() - start;
-			  console.log(duration);
+			  console.log("delay =",duration);
 			});
 		  }, 1000);
-		// socket.emit("initialize_room", { room: 45695, user: "ssisi" }, (users) => {
-		// 	console.log(users);
-		// 	// for (const [user, { id, color }] of Object.entries(users)) {
-		// 	// 	console.log(typeof user);
-		// 	// 	if (user) {
-		// 	// 		AddPlayer({ name: user, id: id, color: color });
-		// 	// 	}
-		// 	// }
-		// });
-		socket.on("addPlayer_room", ({ name, id, color }) => {
-			let idExists = document.querySelector(`[socketID='${id}']`);
-			if (idExists) {
-				idExists.style.backgroundColor = color;
-			} else {
-				AddPlayer({ name: name, id: id, color: color });
+		socket.on("connect", () => { console.log(socket.id) });
+		socket.on("addPlayer_room", ({ user, id, color }) => {
+			console.log({ user, id, color })
+			// let idExists = document.querySelector(`[socketID='${id}']`);
+			// if (idExists) {
+			// 	idExists.style.backgroundColor = color;
+			// } else {
+			// 	AddPlayer({ name: name, id: id, color: color });
+			// }
+		});
+		socket.emit("initialize_room", { room: cookies.room, user: cookies.username },({ users, ...data}) => {
+			console.log(users,data);
+			localStorage.setItem("watchflix",JSON.stringify(data))
+			for (const [user, { id, color }] of Object.entries(users)) {
+				if (!user) continue;
+				// AddPlayer({ name: user, id: id, color: color });
 			}
 		});
-		
-		socket.on("eraseUser", ({ user, id }) => {
-			console.log(`User ${user} erased`);
-			let elem = document.querySelector(`[socketID='${id}']`);
-			document.querySelector(`.players`).removeChild(elem);
-		});
-
 		return ()=>{
-			socket.disconnect();
+			socket.emit("leave_room", { room: cookies.room, user: cookies.username});
+			// socket.disconnect();
 		}
 	},[]);
     return (
@@ -55,60 +51,38 @@ export default function Room({cookies}){
     );
 }
 
-function CreateRoom(e){
-	e.preventDefault();
-	const inputs = [...document.querySelectorAll(".boxContainer .create")];
-	if( inputs.every((input)=> input.value === null || input.value == "" ) ) return;
-	const localStor = JSON.parse(localStorage.getItem("watchflix"));
-	const formData = new FormData(document.querySelector("#room"));
-	const values = Object.fromEntries(formData.entries());console.log(values)
-	localStorage.setItem("watchflix", JSON.stringify({...localStor , ...values }));
-	document.querySelector(".boxContainer #room").submit();
-}
-function JoinRoom(e){
-	e.preventDefault();
-	const inputs = [...document.querySelectorAll(".boxContainer .join")];
-	if( inputs.every((input)=> input.value === null || input.value == "" ) ) return;
-	const formData = new FormData(document.querySelector("#room"));
-	const values = Object.fromEntries(formData.entries());console.log(values)
-	localStorage.setItem("watchflix", JSON.stringify({...localStor , ...values }));
-	document.querySelector(".boxContainer #room").submit();
-}
-
 export async function getServerSideProps({req, params, res}) {
 	const cookie = await JSON.parse(req.cookies["watchflix"] ?? null);
-	console.log("cookie ",cookie)
-	console.log( !cookie?.username || cookie?.room != params.room )
-	if( !cookie?.username || cookie?.room != params.room ){ 
-		setCookies('watchflix', JSON.stringify({...cookie , room: params.room }), { req, res, maxAge: 60 * 60 * 24 });
-		return {
+	let returnCookie = {...cookie , room: params.room, error: null};
+	let returnObj = {	props: { cookies: returnCookie } };
+
+	if( !cookie?.username ){ 
+		returnCookie = {...cookie , room: params.room, error: "You did't fill the username."};
+		returnObj = {
 			redirect: {
 				destination: '/lobby',
 				permanent: true,
 			},
-		}
+		};
 	}
-	const response = await fetch(process.env.SERVER+"/socket/roomExists",{
+	const roomExists = await fetch(process.env.SERVER+"/socket/roomExists",{
 		method:'POST',
 		headers: {
 			'Content-Type': 'application/json'
 		},
-		body: JSON.stringify({room: params.room}),
+		body: JSON.stringify({room: params.room, username: cookie?.username}),
 	});
-	if(!response.ok){
-		console.log("doesnt exists")
-		return {
+	if(!roomExists.ok){
+		returnCookie = {...cookie , room: params.room, error: await roomExists.text() };
+		returnObj = {
 			redirect: {
 				destination: '/lobby',
 				permanent: true,
 			},
-		}
+		};
 	}
-	return {
-		props: {
-			cookies: cookie
-		},
-	};
+	setCookies('watchflix', JSON.stringify( returnCookie ), { req, res, maxAge: 60 * 60 * 24 });
+	return returnObj;
 }
 
 Room.getLayout = function getLayout(page) {

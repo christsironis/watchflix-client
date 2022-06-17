@@ -1,13 +1,13 @@
 import Link from 'next/link';
-import Router,{ useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react';
 import { setCookies, getCookie, removeCookies } from 'cookies-next';
-// import WebTorrent from 'webtorrent-hybrid';
 
 export default function Lobby(){
 	const router = useRouter();
 	const cookie = JSON.parse(getCookie("watchflix") ?? null);
 	useEffect(()=>{
+		if(cookie.error) { alert(cookie?.error); setCookies('watchflix',JSON.stringify( {...cookie, error: null}), { maxAge: 60 * 60 * 24 })  }
 		const localStor = JSON.parse(localStorage.getItem("watchflix") ?? null);
 		const createBut = document.querySelector(".boxContainer #but_create");
 		const joinBut = document.querySelector(".boxContainer #but_join");
@@ -15,29 +15,34 @@ export default function Lobby(){
 		document.querySelector(".boxContainer input[name='magnet']").value = localStor?.magnet || null;
 		document.querySelector(".boxContainer input[name='username']").value = cookie?.username || null;
 		document.querySelector(".boxContainer input[name='room']").value = cookie?.room || null;
-		createBut.addEventListener("click", CreateRoom);
-		joinBut.addEventListener("click", JoinRoom);
+		createBut.addEventListener("click", HandleRoom);
+		joinBut.addEventListener("click", HandleRoom);
 		return ()=>{
-			createBut.removeEventListener("click", CreateRoom);
-			joinBut.removeEventListener("click", JoinRoom);
+			createBut.removeEventListener("click", HandleRoom);
+			joinBut.removeEventListener("click", HandleRoom);
 		}
-	},[]);
-	async function CreateRoom(e){
+	},[router]);
+	async function HandleRoom(e){
 		e.preventDefault();
-		const localStor = JSON.parse(localStorage.getItem("watchflix") ?? null);
+		let localStor = null;
+		let route = "joinRoom";
 		const formData = new FormData(document.querySelector("#room"));
 		const values = Object.fromEntries(formData.entries());
+		if( e.target.id === "but_create" ){
+			route = "createRoom";
+			localStor = JSON.parse(localStorage.getItem("watchflix") ?? null);
+		} 
 	
-		const res = await fetch(process.env.SERVER+"/socket/createRoom",{
+		const res = await fetch(process.env.SERVER+"/socket/"+route,{
 			method:'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({...localStor , ...values }),
+			body: JSON.stringify( {...localStor, ...values} ),
 		});
 		const data = await res.text();
 		if(res.ok){
-			setCookies('watchflix', {...localStor, room: data}, { maxAge: 60 * 60 * 24 }) 
+			setCookies('watchflix',JSON.stringify( {username: values.username, room: data} ), { maxAge: 60 * 60 * 24 }) 
 			router.push("/room/"+data); 
 		}else{
 			alert(data);
@@ -69,29 +74,6 @@ export default function Lobby(){
 		</div>
         </>
     );
-}
-
-async function JoinRoom(e){
-	e.preventDefault();
-	const localStor = await JSON.parse(getCookie("watchflix"));
-	const formData = new FormData(document.querySelector("#room"));
-	const values = Object.fromEntries(formData.entries());
-
-	const res = await fetch(process.env.SERVER+"/socket/joinRoom",{
-		method:'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({...localStor , ...values }),
-	});
-	const data = await res.text();
-	if(res.ok){
-		setCookies('watchflix', {...localStor, room: data}, { maxAge: 60 * 60 * 24 }) 
-		Router.push("/room/"+data); 
-	}else{
-		alert(data);
-		return;
-	}
 }
 
 Lobby.getLayout = function getLayout(page) {
