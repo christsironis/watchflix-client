@@ -2,7 +2,7 @@
 const nextConfig = {
   env: {
     // SERVER: 'http://localhost:3001',
-    // SERVER: 'https://backend-watchflix.herokuapp.com',
+    SERVER: 'https://backend-watchflix.herokuapp.com',
   },
   reactStrictMode: true,
 }
