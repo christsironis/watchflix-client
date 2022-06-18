@@ -18,7 +18,7 @@ export default function Room({cookies}){
 			  const duration = Date.now() - start;
 			  console.log("delay =",duration);
 			});
-		  }, 1000);
+		  }, 10000);
 		socket.on("connect", () => { console.log(socket.id) });
 		socket.on("addPlayer_room", ({ user, id, color }) => {
 			console.log({ user, id, color })
@@ -46,7 +46,7 @@ export default function Room({cookies}){
         <>
 
 		<div>{router.asPath} asdlfkj</div>
-
+		<video controls width="500px" height="500px" src="/video.mp4 "></video>
         </>
     );
 }
