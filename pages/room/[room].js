@@ -11,8 +11,8 @@ export default function Room({cookies}){
 	const router = useRouter();
 	const room = cookies.room;
 	const username = cookies.username;
-	const player = useRef();
 	useEffect(()=>{
+		const player = document.querySelector("video")
 		const socket = io(process.env.SERVER, {transports: ['websocket','polling']});
 		setInterval(() => {
 			const start = Date.now();
@@ -22,39 +22,39 @@ export default function Room({cookies}){
 			  console.log("delay =",duration);
 			});
 		  }, 10000);
-		player.current.addEventListener('timeupdate', SendTimeUpdataEvent);		
+		// player.addEventListener('timeupdate', SendTimeUpdataEvent);		
 		function SendTimeUpdataEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
-			console.log("moved timeline to "+player.current.currentTime);
-			socket.emit("timeupdate",{ room: room, time: player.current.currentTime, user: username })
+			console.log("moved timeline to "+player.currentTime);
+			socket.emit("timeupdate",{ room: room, time: player.currentTime, user: username })
 		}
-		player.current.addEventListener("pause", SendPauseEvent );
+		player.addEventListener("pause", SendPauseEvent );
 		function SendPauseEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
-			console.log("pause at "+player.current.currentTime);
-			socket.emit("pause",{ room: room, time: player.current.currentTime, user: username })
+			console.log("pause at "+player.currentTime);
+			socket.emit("pause",{ room: room, time: player.currentTime, user: username })
 		}
-		player.current.addEventListener("play", SendPlayEvent );
+		player.addEventListener("play", SendPlayEvent );
 		function SendPlayEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
-			console.log("play at "+player.current.currentTime)
-			socket.emit("play",{ room: room, time: player.current.currentTime, user: username })
+			console.log("play at "+player.currentTime)
+			socket.emit("play",{ room: room, time: player.currentTime, user: username })
 		}
 
 		socket.on("connect", () => { console.log(socket.id) });
 		socket.on("timeupdata", ({ time, user }) =>{
 			player.serverResp = true;
-			player.current.currentTime = time;
+			player.currentTime = time;
 		});
 		socket.on("pause", ({ time, user }) =>{
 			player.serverResp = true;
-			player.current.currentTime = time;
-			player.current.pause();
+			player.currentTime = time;
+			player.pause();
 		});
 		socket.on("play", ({ time, user }) =>{
 			player.serverResp = true;
-			player.current.currentTime = time;
-			player.current.play();
+			player.currentTime = time;
+			player.play();
 		});
 		socket.on("addPlayer_room", ({ user, id, color }) => {
 			console.log({ user, id, color })
@@ -75,16 +75,16 @@ export default function Room({cookies}){
 		});
 		return ()=>{
 			socket.emit("leave_room", { room: cookies.room, user: username});
-			player.current.removeEventListener("pause", SendPauseEvent );
-			player.current.removeEventListener("play", SendPlayEvent );
-			// socket.disconnect();
+			player.removeEventListener("pause", SendPauseEvent );
+			player.removeEventListener("play", SendPlayEvent );
+			socket.disconnect();
 		}
 	},[]);
     return (
         <>
 
 		<div>{router.asPath} asdlfkj</div>
-		<video ref={player} controls width="500px" height="500px" src="/video.mp4 "></video>
+		<video controls width="500px" height="500px" src="/video.mp4 "></video>
         </>
     );
 }
