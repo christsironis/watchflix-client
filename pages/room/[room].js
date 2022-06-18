@@ -9,17 +9,53 @@ import WebTorrent from 'webtorrent-hybrid';
 
 export default function Room({cookies}){
 	const router = useRouter();
+	const room = cookies.room;
+	const username = cookies.username;
+	const player = useRef();
 	useEffect(()=>{
 		const socket = io(process.env.SERVER, {transports: ['websocket','polling']});
 		setInterval(() => {
 			const start = Date.now();
 		  
-			socket.emit("ping", () => {
+			socket.volatile.emit("ping", () => {
 			  const duration = Date.now() - start;
 			  console.log("delay =",duration);
 			});
 		  }, 10000);
+		player.current.addEventListener('timeupdate', SendTimeUpdataEvent);		
+		function SendTimeUpdataEvent(e){
+			if( player.serverResp ) { player.serverResp = false; return; }
+			console.log("moved timeline to "+player.current.currentTime);
+			socket.emit("timeupdate",{ room: room, time: player.current.currentTime, user: username })
+		}
+		player.current.addEventListener("pause", SendPauseEvent );
+		function SendPauseEvent(e){
+			if( player.serverResp ) { player.serverResp = false; return; }
+			console.log("pause at "+player.current.currentTime);
+			socket.emit("pause",{ room: room, time: player.current.currentTime, user: username })
+		}
+		player.current.addEventListener("play", SendPlayEvent );
+		function SendPlayEvent(e){
+			if( player.serverResp ) { player.serverResp = false; return; }
+			console.log("play at "+player.current.currentTime)
+			socket.emit("play",{ room: room, time: player.current.currentTime, user: username })
+		}
+
 		socket.on("connect", () => { console.log(socket.id) });
+		socket.on("timeupdata", ({ time, user }) =>{
+			player.serverResp = true;
+			player.current.currentTime = time;
+		});
+		socket.on("pause", ({ time, user }) =>{
+			player.serverResp = true;
+			player.current.currentTime = time;
+			player.current.pause();
+		});
+		socket.on("play", ({ time, user }) =>{
+			player.serverResp = true;
+			player.current.currentTime = time;
+			player.current.play();
+		});
 		socket.on("addPlayer_room", ({ user, id, color }) => {
 			console.log({ user, id, color })
 			// let idExists = document.querySelector(`[socketID='${id}']`);
@@ -29,7 +65,7 @@ export default function Room({cookies}){
 			// 	AddPlayer({ name: name, id: id, color: color });
 			// }
 		});
-		socket.emit("initialize_room", { room: cookies.room, user: cookies.username },({ users, ...data}) => {
+		socket.emit("initialize_room", { room: cookies.room, user: username },({ users, ...data}) => {
 			console.log(users,data);
 			localStorage.setItem("watchflix",JSON.stringify(data))
 			for (const [user, { id, color }] of Object.entries(users)) {
@@ -38,7 +74,9 @@ export default function Room({cookies}){
 			}
 		});
 		return ()=>{
-			socket.emit("leave_room", { room: cookies.room, user: cookies.username});
+			socket.emit("leave_room", { room: cookies.room, user: username});
+			player.current.removeEventListener("pause", SendPauseEvent );
+			player.current.removeEventListener("play", SendPlayEvent );
 			// socket.disconnect();
 		}
 	},[]);
@@ -46,7 +84,7 @@ export default function Room({cookies}){
         <>
 
 		<div>{router.asPath} asdlfkj</div>
-		<video controls width="500px" height="500px" src="/video.mp4 "></video>
+		<video ref={player} controls width="500px" height="500px" src="/video.mp4 "></video>
         </>
     );
 }
