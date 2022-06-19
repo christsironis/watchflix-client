@@ -17,32 +17,36 @@ export default function Room({cookies}){
 		setInterval(() => {
 			const start = Date.now();
 		  
-			socket.volatile.emit("ping", () => {
-			  const duration = Date.now() - start;
-			  console.log("delay =",duration);
+			socket.volatile.emit("ping", room ,(time) => {
+				if( Math.abs(time - player.currentTime) > 1 ){
+					player.currentTime = time;
+				}
+				console.log("VideoTime= ",player.currentTime,"ServerTime= ",time)
+				const duration = Date.now() - start;
+				console.log("delay =",duration);
 			});
-		  }, 10000);
+		  }, 5000);
 		// player.addEventListener('timeupdate', SendTimeUpdataEvent);		
 		function SendTimeUpdataEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
-			console.log("moved timeline to "+player.currentTime);
+			console.log("%cmoved timeline to "+player.currentTime,"color:gray;font-size:2rem;font-weight:bold");
 			socket.emit("timeupdate",{ room: room, time: player.currentTime, user: username })
 		}
 		player.addEventListener("pause", SendPauseEvent );
 		function SendPauseEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
-			console.log("pause at "+player.currentTime);
+			console.log("%cpause at "+player.currentTime,"color:red;font-size:2rem;font-weight:bold");
 			socket.emit("pause",{ room: room, time: player.currentTime, user: username })
 		}
 		player.addEventListener("play", SendPlayEvent );
 		function SendPlayEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
-			console.log("play at "+player.currentTime)
+			console.log("%cplay at "+player.currentTime,"color:green;font-size:2rem;font-weight:bold")
 			socket.emit("play",{ room: room, time: player.currentTime, user: username })
 		}
 
 		socket.on("connect", () => { console.log(socket.id) });
-		socket.on("timeupdata", ({ time, user }) =>{
+		socket.on("timeupdate", ({ time, user }) =>{
 			player.serverResp = true;
 			player.currentTime = time;
 		});
