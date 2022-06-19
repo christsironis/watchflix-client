@@ -12,6 +12,13 @@ export default function Room({cookies}){
 	const room = cookies.room;
 	const username = cookies.username;
 	useEffect(()=>{
+		const drop = document.querySelector("#drop_zone");
+		drop.addEventListener('dragover', handleDragOver, false)
+		drop.addEventListener("drop",event => {
+			// prevent default action (open as link for some elements)
+			event.preventDefault();
+console.log(111111111111111111111111)
+		},false)
 		const player = document.querySelector("video")
 		const socket = io(process.env.NEXT_PUBLIC_SERVER, {transports: ['websocket','polling']});
 		setInterval(() => {
@@ -26,12 +33,6 @@ export default function Room({cookies}){
 				console.log("delay =",duration);
 			});
 		  }, 5000);
-		// player.addEventListener('timeupdate', SendTimeUpdataEvent);		
-		function SendTimeUpdataEvent(e){
-			if( player.serverResp ) { player.serverResp = false; return; }
-			console.log("%cmoved timeline to "+player.currentTime,"color:gray;font-size:2rem;font-weight:bold");
-			socket.emit("timeupdate",{ room: room, time: player.currentTime, user: username })
-		}
 		player.addEventListener("pause", SendPauseEvent );
 		function SendPauseEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
@@ -86,13 +87,43 @@ export default function Room({cookies}){
 	},[]);
     return (
         <>
-
+		<div width="500px" height="500px" id="drop_zone">
+  <p>Drag one or more files to this Drop Zone ...</p>
+</div>
+<input type="file" accept="video/*"/>
 		<div>{router.asPath} asdlfkj</div>
 		<video controls width="500px" height="500px" src="/video.mp4 "></video>
         </>
     );
 }
 
+function handleDragOver(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+  }
+function dropHandler(ev) {
+	console.log('File(s) dropped');
+  
+	// Prevent default behavior (Prevent file from being opened)
+	ev.preventDefault();
+  
+	if (ev.dataTransfer.items) {
+	  // Use DataTransferItemList interface to access the file(s)
+	  for (let i = 0; i < ev.dataTransfer.items.length; i++) {
+		// If dropped items aren't files, reject them
+		if (ev.dataTransfer.items[i].kind === 'file') {
+		  const file = ev.dataTransfer.items[i].getAsFile();
+		  console.log('... file[' + i + '].name = ' + file.name);
+		}
+	  }
+	} else {
+	  // Use DataTransfer interface to access the file(s)
+	  for (let i = 0; i < ev.dataTransfer.files.length; i++) {
+		console.log('... file[' + i + '].name = ' + ev.dataTransfer.files[i].name);
+	  }
+	}
+  }
 export async function getServerSideProps({req, params, res}) {
 	const cookie = await JSON.parse(req.cookies["watchflix"] ?? null);
 	let returnCookie = {...cookie , room: params.room, error: null};
