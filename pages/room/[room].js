@@ -13,7 +13,7 @@ export default function Room({cookies}){
 	const username = cookies.username;
 	useEffect(()=>{
 		const player = document.querySelector("video")
-		const socket = io(process.env.SERVER, {transports: ['websocket','polling']});
+		const socket = io(process.env.NEXT_PUBLIC_SERVER, {transports: ['websocket','polling']});
 		setInterval(() => {
 			const start = Date.now();
 		  
@@ -107,7 +107,7 @@ export async function getServerSideProps({req, params, res}) {
 			},
 		};
 	}
-	const roomExists = await fetch(process.env.SERVER+"/socket/roomExists",{
+	const roomExists = await fetch(process.env.NEXT_PUBLIC_SERVER+"/socket/roomExists",{
 		method:'POST',
 		headers: {
 			'Content-Type': 'application/json'

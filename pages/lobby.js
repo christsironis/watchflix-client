@@ -33,7 +33,7 @@ export default function Lobby(){
 			localStor = JSON.parse(localStorage.getItem("watchflix") ?? null);
 		} 
 	
-		const res = await fetch(process.env.SERVER+"/socket/"+route,{
+		const res = await fetch(process.env.NEXT_PUBLIC_SERVER+"/socket/"+route,{
 			method:'POST',
 			headers: {
 				'Content-Type': 'application/json'
