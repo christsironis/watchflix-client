@@ -15,26 +15,22 @@ export default function Room({cookies}){
 		document.addEventListener('dragenter', DragEnter, true);
 		document.addEventListener('dragover', DragOver, true);
 		document.addEventListener('dragleave', DragLeave, true);
-		document.addEventListener("drop",event => {
-    		event.stopPropagation();
-			event.preventDefault();
-			console.log(111111111111111111111111)
-		},true)
-		const player = document.querySelector("video")
+		document.addEventListener("drop", Drop ,true);
+		const player = document.querySelector("video");
 		const socket = io(process.env.NEXT_PUBLIC_SERVER, {transports: ['websocket','polling']});
-		setInterval(() => {
-			const start = Date.now();
+		// setInterval(() => {
+		// 	const start = Date.now();
 		  
-			socket.volatile.emit("ping", room ,(time) => {
-				if( Math.abs(time - player.currentTime) > 1 ){
-					player.currentTime = time;
-				}
-				console.log(time - player.currentTime)
-				console.log("VideoTime= ",player.currentTime,"ServerTime= ",time)
-				const duration = Date.now() - start;
-				console.log("delay =",duration);
-			});
-		  }, 5000);
+		// 	socket.volatile.emit("ping", room ,(time) => {
+		// 		if( Math.abs(time - player.currentTime) > 1 ){
+		// 			player.currentTime = time;
+		// 		}
+		// 		console.log(time - player.currentTime)
+		// 		console.log("VideoTime= ",player.currentTime,"ServerTime= ",time)
+		// 		const duration = Date.now() - start;
+		// 		console.log("delay =",duration);
+		// 	});
+		//   }, 5000);
 		player.addEventListener("pause", SendPauseEvent );
 		function SendPauseEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
@@ -95,60 +91,55 @@ export default function Room({cookies}){
 		<div id="dragdropcont" className=''>
 			<div id="dragdrop">Drop it here...</div>
 		</div>
-		<input type="file" accept="video/*"/>
 		<div>{router.asPath} asdlfkj</div>
 		<video controls width="500px" height="500px" src="/video.mp4 "></video>
         </>
     );
 }
 
-function DragEnter(evt) {
-    evt.stopPropagation();
-    // evt.preventDefault();
-	console.log(1111111111111111111)
-    document.querySelector("#dragdropcont")?.classList.add("show");
+function DragEnter(e) {
+    e.stopPropagation();
+	if (!e.relatedTarget) {
+    	document.querySelector("#dragdropcont")?.classList.add("show");
+	}
 }
-function DragOver(evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
-	console.log(222222222222222)
-    document.querySelector("#dragdropcont")?.classList.add("show");
+function DragOver(e) {
+    e.stopPropagation();
+    e.preventDefault();
 }
-function DragLeave(evt) {
-    evt.stopPropagation();
-    // evt.preventDefault();
-	// if (!evt.target.classList.contains("show")) {
-	console.log("drag leave")
+function DragLeave(e) {
+    e.stopPropagation();
+	if (!e.relatedTarget) {
+		document.querySelector("#dragdropcont")?.classList.remove("show");
+	}
+}
+function Drop(e) {
+	e.preventDefault();
 	document.querySelector("#dragdropcont")?.classList.remove("show");
-// }
-  }
-function DragEnd(evt) {
-    evt.stopPropagation();
-    // evt.preventDefault();
-	// if (!evt.target.classList.contains("show")) {
-	console.log("drag end")
-	document.querySelector("#dragdropcont")?.classList.remove("show");
-// }
-  }
-function dropHandler(ev) {
-	console.log('File(s) dropped');
-  
-	// Prevent default behavior (Prevent file from being opened)
-	ev.preventDefault();
-  
-	if (ev.dataTransfer.items) {
-	  // Use DataTransferItemList interface to access the file(s)
-	  for (let i = 0; i < ev.dataTransfer.items.length; i++) {
-		// If dropped items aren't files, reject them
-		if (ev.dataTransfer.items[i].kind === 'file') {
-		  const file = ev.dataTransfer.items[i].getAsFile();
-		  console.log('... file[' + i + '].name = ' + file.name);
+	const player = document.querySelector("video");
+
+	if (e.dataTransfer.items) {
+	  for (let i = 0; i < e.dataTransfer.items.length; i++) {
+		console.log('... file[' + i + '].name = ' + e.dataTransfer.files[i].name + " "+ e.dataTransfer.items[i].type);
+		if (e.dataTransfer.items[i].type.match('^video/') ) {
+			const file = e.dataTransfer.items[i].getAsFile();
+			const link = URL.createObjectURL(file);
+			player.src = link;
 		}
-	  }
-	} else {
-	  // Use DataTransfer interface to access the file(s)
-	  for (let i = 0; i < ev.dataTransfer.files.length; i++) {
-		console.log('... file[' + i + '].name = ' + ev.dataTransfer.files[i].name);
+		if (e.dataTransfer.files[i].name.match('.vtt$') ) {
+			const file = e.dataTransfer.items[i].getAsFile();
+			const track = document.createElement("track");
+			track.kind = "subtitles"; 
+			track.label = file.name;
+			track.srclang = "en"
+			track.src  = URL.createObjectURL(file);
+			player.appendChild(track);
+			const items = player.textTracks.length;
+			for (const i = 0; i < items -1; i++) {
+				player.textTracks[i].mode = 'hidden';
+			}
+			player.textTracks[ items - 1 ].mode = 'showing';
+		}
 	  }
 	}
   }

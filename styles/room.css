@@ -1,6 +1,7 @@
 #dragdropcont{
     display: none;
-    /* position:fixed; */
+    position:fixed;
+    pointer-events: none;
     top: 0%;
     left: 0%;
     width: 100%;
@@ -9,6 +10,7 @@
     align-items: center;
     background-color: rgba(0, 0, 0, 0.8);
     box-shadow: inset 0px 0px 50px 0px #5800e6;
+    z-index: 5;
 }
 #dragdrop{
     width: 40%;
