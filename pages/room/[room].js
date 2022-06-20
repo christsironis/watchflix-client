@@ -12,13 +12,14 @@ export default function Room({cookies}){
 	const room = cookies.room;
 	const username = cookies.username;
 	useEffect(()=>{
-		const drop = document.querySelector("#drop_zone");
-		drop.addEventListener('dragover', handleDragOver, false)
-		drop.addEventListener("drop",event => {
-			// prevent default action (open as link for some elements)
+		document.addEventListener('dragenter', DragEnter, true);
+		document.addEventListener('dragover', DragOver, true);
+		document.addEventListener('dragleave', DragLeave, true);
+		document.addEventListener("drop",event => {
+    		event.stopPropagation();
 			event.preventDefault();
-console.log(111111111111111111111111)
-		},false)
+			console.log(111111111111111111111111)
+		},true)
 		const player = document.querySelector("video")
 		const socket = io(process.env.NEXT_PUBLIC_SERVER, {transports: ['websocket','polling']});
 		setInterval(() => {
@@ -28,6 +29,7 @@ console.log(111111111111111111111111)
 				if( Math.abs(time - player.currentTime) > 1 ){
 					player.currentTime = time;
 				}
+				console.log(time - player.currentTime)
 				console.log("VideoTime= ",player.currentTime,"ServerTime= ",time)
 				const duration = Date.now() - start;
 				console.log("delay =",duration);
@@ -80,6 +82,9 @@ console.log(111111111111111111111111)
 		});
 		return ()=>{
 			socket.emit("leave_room", { room: cookies.room, user: username});
+			document.removeEventListener('dragenter', DragEnter, true);
+			document.removeEventListener('dragover', DragOver, true);
+			document.removeEventListener('dragleave', DragLeave, true);
 			player.removeEventListener("pause", SendPauseEvent );
 			player.removeEventListener("play", SendPlayEvent );
 			socket.disconnect();
@@ -87,20 +92,43 @@ console.log(111111111111111111111111)
 	},[]);
     return (
         <>
-		<div width="500px" height="500px" id="drop_zone">
-  <p>Drag one or more files to this Drop Zone ...</p>
-</div>
-<input type="file" accept="video/*"/>
+		<div id="dragdropcont" className=''>
+			<div id="dragdrop">Drop it here...</div>
+		</div>
+		<input type="file" accept="video/*"/>
 		<div>{router.asPath} asdlfkj</div>
 		<video controls width="500px" height="500px" src="/video.mp4 "></video>
         </>
     );
 }
 
-function handleDragOver(evt) {
+function DragEnter(evt) {
+    evt.stopPropagation();
+    // evt.preventDefault();
+	console.log(1111111111111111111)
+    document.querySelector("#dragdropcont")?.classList.add("show");
+}
+function DragOver(evt) {
     evt.stopPropagation();
     evt.preventDefault();
-    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+	console.log(222222222222222)
+    document.querySelector("#dragdropcont")?.classList.add("show");
+}
+function DragLeave(evt) {
+    evt.stopPropagation();
+    // evt.preventDefault();
+	// if (!evt.target.classList.contains("show")) {
+	console.log("drag leave")
+	document.querySelector("#dragdropcont")?.classList.remove("show");
+// }
+  }
+function DragEnd(evt) {
+    evt.stopPropagation();
+    // evt.preventDefault();
+	// if (!evt.target.classList.contains("show")) {
+	console.log("drag end")
+	document.querySelector("#dragdropcont")?.classList.remove("show");
+// }
   }
 function dropHandler(ev) {
 	console.log('File(s) dropped');
