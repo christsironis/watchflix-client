@@ -18,7 +18,7 @@ export default function Room({cookies}){
 		document.addEventListener('dragleave', DragLeave, true);
 		document.addEventListener("drop", Drop ,true);
 		const player = document.querySelector("video");
-		const socket = io(process.env.NEXT_PUBLIC_SERVER, {transports: ['websocket','polling']});
+		const socket = io(process.env.NEXT_PUBLIC_SERVER, { withCredentials: true, transports: ['websocket','polling'] });
 		// setInterval(() => {
 		// 	const start = Date.now();
 		  
