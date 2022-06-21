@@ -18,20 +18,20 @@ export default function Room({cookies}){
 		document.addEventListener('dragleave', DragLeave, true);
 		document.addEventListener("drop", Drop ,true);
 		const player = document.querySelector("video");
-		const socket = io(process.env.NEXT_PUBLIC_SERVER, { withCredentials: true, transports: ['websocket','polling'] });
-		// setInterval(() => {
-		// 	const start = Date.now();
+		const socket = io(process.env.NEXT_PUBLIC_SERVER, { transports: ['websocket'] });
+		setInterval(() => {
+			const start = Date.now();
 		  
-		// 	socket.volatile.emit("ping", room ,(time) => {
-		// 		if( Math.abs(time - player.currentTime) > 1 ){
-		// 			player.currentTime = time;
-		// 		}
-		// 		console.log(time - player.currentTime)
-		// 		console.log("VideoTime= ",player.currentTime,"ServerTime= ",time)
-		// 		const duration = Date.now() - start;
-		// 		console.log("delay =",duration);
-		// 	});
-		//   }, 5000);
+			socket.volatile.emit("ping", room ,(time) => {
+				if( Math.abs(time - player.currentTime) > 1 ){
+					player.currentTime = time;
+				}
+				console.log(time - player.currentTime)
+				console.log("VideoTime= ",player.currentTime,"ServerTime= ",time)
+				const duration = Date.now() - start;
+				console.log("delay =",duration);
+			});
+		  }, 5000);
 		player.addEventListener("pause", SendPauseEvent );
 		function SendPauseEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
@@ -69,7 +69,7 @@ export default function Room({cookies}){
 			// 	AddPlayer({ name: name, id: id, color: color });
 			// }
 		});
-		socket.emit("initialize_room", { room: cookies.room, user: username },({ users, ...data}) => {
+		socket.emit("initialize_room", { room: cookies.room, user: username },({ users, data }) => {
 			console.log(users,data);
 			localStorage.setItem("watchflix",JSON.stringify(data))
 			for (const [user, { id, color }] of Object.entries(users)) {
