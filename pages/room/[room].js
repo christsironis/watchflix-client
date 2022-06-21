@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Script from 'next/script';
+import toWebVTT from "srt-webvtt";
 import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react';
 import { setCookies, getCookie, removeCookies } from 'cookies-next';
@@ -78,12 +79,12 @@ export default function Room({cookies}){
 		});
 		return ()=>{
 			socket.emit("leave_room", { room: cookies.room, user: username});
+			socket.disconnect();
 			document.removeEventListener('dragenter', DragEnter, true);
 			document.removeEventListener('dragover', DragOver, true);
 			document.removeEventListener('dragleave', DragLeave, true);
 			player.removeEventListener("pause", SendPauseEvent );
 			player.removeEventListener("play", SendPlayEvent );
-			socket.disconnect();
 		}
 	},[]);
     return (
@@ -113,36 +114,42 @@ function DragLeave(e) {
 		document.querySelector("#dragdropcont")?.classList.remove("show");
 	}
 }
-function Drop(e) {
+async function Drop(e) {
 	e.preventDefault();
 	document.querySelector("#dragdropcont")?.classList.remove("show");
 	const player = document.querySelector("video");
 
 	if (e.dataTransfer.items) {
 	  for (let i = 0; i < e.dataTransfer.items.length; i++) {
-		console.log('... file[' + i + '].name = ' + e.dataTransfer.files[i].name + " "+ e.dataTransfer.items[i].type);
-		if (e.dataTransfer.items[i].type.match('^video/') ) {
-			const file = e.dataTransfer.items[i].getAsFile();
+		  const file = e.dataTransfer.items[i].getAsFile();
+		  console.log('... file[' + i + '].name = ' + file.name + " "+ e.dataTransfer.items.type);
+		if (file.type.match('^video/') ) {
 			const link = URL.createObjectURL(file);
 			player.src = link;
 		}
-		if (e.dataTransfer.files[i].name.match('.vtt$') ) {
-			const file = e.dataTransfer.items[i].getAsFile();
-			const track = document.createElement("track");
-			track.kind = "subtitles"; 
-			track.label = file.name;
-			track.srclang = "en"
-			track.src  = URL.createObjectURL(file);
-			player.appendChild(track);
-			const items = player.textTracks.length;
-			for (const i = 0; i < items -1; i++) {
-				player.textTracks[i].mode = 'hidden';
-			}
-			player.textTracks[ items - 1 ].mode = 'showing';
+		else if (file.name.match('.vtt$') ) {
+			AddSubTrack( player, file, URL.createObjectURL(file) );
+		}
+		else if(file.name.match('.srt$') ){
+			const textTrackUrl = await toWebVTT(file);
+			AddSubTrack( player, file, textTrackUrl );
 		}
 	  }
 	}
-  }
+}
+function AddSubTrack( player, file, url){
+	const track = document.createElement("track");
+	track.kind = "subtitles"; 
+	track.label = file.name;
+	track.srclang = "en"
+	track.src = url;
+	player.append(track);
+	const items = player.textTracks.length;
+	for (const i = 0; i < items -1; i++) {
+		player.textTracks[i].mode = 'hidden';
+	}
+	player.textTracks[ items - 1 ].mode = 'showing';
+}
 export async function getServerSideProps({req, params, res}) {
 	const cookie = await JSON.parse(req.cookies["watchflix"] ?? null);
 	let returnCookie = {...cookie , room: params.room, error: null};
