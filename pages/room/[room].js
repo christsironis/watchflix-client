@@ -18,7 +18,9 @@ export default function Room({cookies}){
 		document.addEventListener('dragleave', DragLeave, true);
 		document.addEventListener("drop", Drop ,true);
 		const player = document.querySelector("video");
-		const socket = io(process.env.NEXT_PUBLIC_SERVER, { transports: ['websocket'] });
+		const socket = io(process.env.NEXT_PUBLIC_SERVER, {extraHeaders: {
+			Cookie: getCookie("watchflix"),
+		  } ,transports: ['websocket'] });
 		setInterval(() => {
 			const start = Date.now();
 		  
