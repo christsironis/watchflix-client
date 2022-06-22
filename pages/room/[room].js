@@ -30,14 +30,14 @@ export default function Room({cookies}){
 		setInterval(() => {
 			const start = Date.now();
 		  
-			socket.volatile.emit("ping", room ,(time) => {
+			socket.volatile.emit("ping", room ,(serverTime) => {
 				const delay = Date.now() - start;
-				time += delay;
-				time< 0? time=0: null;
-				console.log("VideoTime= ",player.currentTime,"ServerTime= ",time)
-				document.querySelector("#ping").innerHTML = "Delay = "+delay+" \nVideoTime= "+player.currentTime+" \nServerTime= "+time;
-				if( Math.abs(time - player.currentTime) > 0.2 ){
-					player.currentTime = time;
+				serverTime += delay;
+				// time< 0? time=0: null;
+				console.log("VideoTime= ",player.currentTime,"ServerTime= ",serverTime)
+				document.querySelector("#ping").innerHTML = "Delay = "+delay+" \n VideoTime= <span style='color:red;'>"+player.currentTime+" </span> \nServerTime= <span style='color:red;'> "+serverTime+"</span>";
+				if( Math.abs(serverTime - player.currentTime) > 0.5 ){
+					player.currentTime = serverTime;
 				}
 				// console.log(time - player.currentTime)
 				console.log("delay =",delay);
@@ -47,13 +47,13 @@ export default function Room({cookies}){
 		function SendPauseEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
 			console.log("%cpause at "+player.currentTime,"color:red;font-size:2rem;font-weight:bold");
-			socket.emit("pause",{ room: room, time: player.currentTime, user: username })
+			socket.emit("pause",{ room: room, videoTime: player.currentTime, user: username, dateEmited: Date.now()})
 		}
 		player.addEventListener("play", SendPlayEvent );
 		function SendPlayEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
 			console.log("%cplay at "+player.currentTime,"color:green;font-size:2rem;font-weight:bold")
-			socket.emit("play",{ room: room, time: player.currentTime, user: username })
+			socket.emit("play",{ room: room, videoTime: player.currentTime, user: username, dateEmited: Date.now() })
 		}
 
 		socket.on("connect", () => { console.log(socket.id) });
