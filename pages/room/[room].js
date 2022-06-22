@@ -61,14 +61,14 @@ export default function Room({cookies}){
 			const dateNow = Date.now();
 			const emitionDelay = dateNow - dateEmited;
 			player.serverResp = true;
-			player.currentTime = (videoTime - emitionDelay) > 0? videoTime - emitionDelay : 0;
+			player.currentTime = (videoTime - (emitionDelay/1000)) > 0? videoTime - (emitionDelay/1000) : 0;
 			player.pause();
 		});
 		socket.on("play", ({ videoTime, dateEmited, user }) =>{
 			const dateNow = Date.now();
 			const emitionDelay = dateNow - dateEmited;
 			player.serverResp = true;
-			player.currentTime = videoTime + emitionDelay;
+			player.currentTime = videoTime + (emitionDelay/1000);
 			player.play();
 		});
 		socket.on("addPlayer_room", ({ user, id, color }) => {
