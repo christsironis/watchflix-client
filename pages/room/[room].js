@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react';
 import { setCookies, getCookie, removeCookies } from 'cookies-next';
 import { io } from "socket.io-client";
-import WebTorrent from 'webtorrent-hybrid';
+import WebTorrent from 'webtorrent';
 
 
 export default function Room({cookies}){
@@ -13,6 +13,7 @@ export default function Room({cookies}){
 	const room = cookies.room;
 	const username = cookies.username;
 	useEffect(()=>{
+		const client = new WebTorrent();
 		document.addEventListener('dragenter', DragEnter, true);
 		document.addEventListener('dragover', DragOver, true);
 		document.addEventListener('dragleave', DragLeave, true);
@@ -46,10 +47,6 @@ export default function Room({cookies}){
 		}
 
 		socket.on("connect", () => { console.log(socket.id) });
-		socket.on("timeupdate", ({ time, user }) =>{
-			player.serverResp = true;
-			player.currentTime = time;
-		});
 		socket.on("pause", ({ time, user }) =>{
 			player.serverResp = true;
 			player.currentTime = time;
@@ -71,7 +68,18 @@ export default function Room({cookies}){
 		});
 		socket.emit("initialize_room", { room: cookies.room, user: username },({ users, data }) => {
 			console.log(users,data);
-			localStorage.setItem("watchflix",JSON.stringify(data))
+			localStorage.setItem("watchflix",JSON.stringify(data));
+			console.log(client)
+			client.add(data.magnet, function (torrent) {
+				// Got torrent metadata!
+				console.log('Client is downloading:', torrent.infoHash)
+			  
+				torrent.files.forEach(function (file) {
+				  // Display the file by appending it to the DOM. Supports video, audio, images, and
+				  // more. Specify a container element (CSS selector or reference to DOM node).
+				  file.appendTo('body')
+				})
+			  })
 			for (const [user, { id, color }] of Object.entries(users)) {
 				if (!user) continue;
 				// AddPlayer({ name: user, id: id, color: color });
