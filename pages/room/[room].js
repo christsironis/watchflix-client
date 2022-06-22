@@ -13,13 +13,20 @@ export default function Room({cookies}){
 	const room = cookies.room;
 	const username = cookies.username;
 	useEffect(()=>{
-		const client = new WebTorrent();
+		async function GetSubs(title){
+			fetch("https://english-subtitles.org/index.php?do=search", {
+				"body": "do=search&subaction=search&story=crimes+of+the+future",
+				"method": "POST"
+			  }).then(res=> res.text()).then(res=>console.log(res));
+		  }
+		GetSubs("iron-man");
+		const socket = io(process.env.NEXT_PUBLIC_SERVER, { transports: ['websocket'] });
+		// const webtorrent = new WebTorrent();
 		document.addEventListener('dragenter', DragEnter, true);
 		document.addEventListener('dragover', DragOver, true);
 		document.addEventListener('dragleave', DragLeave, true);
 		document.addEventListener("drop", Drop ,true);
 		const player = document.querySelector("video");
-		const socket = io(process.env.NEXT_PUBLIC_SERVER, { transports: ['websocket'] });
 		setInterval(() => {
 			const start = Date.now();
 		  
@@ -29,6 +36,7 @@ export default function Room({cookies}){
 				}
 				console.log(time - player.currentTime)
 				console.log("VideoTime= ",player.currentTime,"ServerTime= ",time)
+				document.querySelector("#ping").innerHTML = "VideoTime= "+player.currentTime+"ServerTime= "+time;
 				const duration = Date.now() - start;
 				console.log("delay =",duration);
 			});
@@ -65,21 +73,22 @@ export default function Room({cookies}){
 			// } else {
 			// 	AddPlayer({ name: name, id: id, color: color });
 			// }
-		});
+		});"f710cbd236e6361e8d5fee39a97a249c56b61132"
+		
 		socket.emit("initialize_room", { room: cookies.room, user: username },({ users, data }) => {
 			console.log(users,data);
 			localStorage.setItem("watchflix",JSON.stringify(data));
-			console.log(client)
-			client.add(data.magnet, function (torrent) {
-				// Got torrent metadata!
-				console.log('Client is downloading:', torrent.infoHash)
+			// console.log(webtorrent)
+			// webtorrent.add(data.magnet, function (torrent) {
+			// 	// Got torrent metadata!
+			// 	console.log('Client is downloading:', torrent.infoHash)
 			  
-				torrent.files.forEach(function (file) {
-				  // Display the file by appending it to the DOM. Supports video, audio, images, and
-				  // more. Specify a container element (CSS selector or reference to DOM node).
-				  file.appendTo('body')
-				})
-			  })
+			// 	torrent.files.forEach(function (file) {
+			// 	  // Display the file by appending it to the DOM. Supports video, audio, images, and
+			// 	  // more. Specify a container element (CSS selector or reference to DOM node).
+			// 	  file.appendTo('body')
+			// 	})
+			// })
 			for (const [user, { id, color }] of Object.entries(users)) {
 				if (!user) continue;
 				// AddPlayer({ name: user, id: id, color: color });
@@ -100,6 +109,7 @@ export default function Room({cookies}){
 		<div id="dragdropcont" className=''>
 			<div id="dragdrop">Drop it here...</div>
 		</div>
+		<div id="ping"></div>
 		<div>{router.asPath} asdlfkj</div>
 		<video controls width="500px" height="500px" src="/video.mp4 "></video>
         </>
