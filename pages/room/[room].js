@@ -32,10 +32,10 @@ export default function Room({cookies}){
 		  
 			socket.volatile.emit("ping", room ,(time) => {
 				const delay = Date.now() - start;
-				time -= delay;
+				time += delay;
 				time< 0? time=0: null;
 				console.log("VideoTime= ",player.currentTime,"ServerTime= ",time)
-				document.querySelector("#ping").innerHTML = "Delay = "+delay+" \nVideoTime= "+player.currentTime+" \nerverTime= "+time;
+				document.querySelector("#ping").innerHTML = "Delay = "+delay+" \nVideoTime= "+player.currentTime+" \nServerTime= "+time;
 				if( Math.abs(time - player.currentTime) > 0.2 ){
 					player.currentTime = time;
 				}
