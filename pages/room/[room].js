@@ -13,13 +13,13 @@ export default function Room({cookies}){
 	const room = cookies.room;
 	const username = cookies.username;
 	useEffect(()=>{
-		async function GetSubs(title){
-			fetch("https://english-subtitles.org/index.php?do=search", {
-				"body": "do=search&subaction=search&story=crimes+of+the+future",
-				"method": "POST"
-			  }).then(res=> res.text()).then(res=>console.log(res));
-		  }
-		GetSubs("iron-man");
+		// async function GetSubs(title){
+		// 	fetch("https://english-subtitles.org/index.php?do=search", {
+		// 		"body": "do=search&subaction=search&story=crimes+of+the+future",
+		// 		"method": "POST"
+		// 	  }).then(res=> res.text()).then(res=>console.log(res));
+		//   }
+		// GetSubs("iron-man");
 		const socket = io(process.env.NEXT_PUBLIC_SERVER, { transports: ['websocket'] });
 		// const webtorrent = new WebTorrent();
 		document.addEventListener('dragenter', DragEnter, true);
@@ -31,14 +31,15 @@ export default function Room({cookies}){
 			const start = Date.now();
 		  
 			socket.volatile.emit("ping", room ,(time) => {
+				const delay = Date.now() - start;
+				time -= delay;
+				console.log("VideoTime= ",player.currentTime,"ServerTime= ",time)
+				document.querySelector("#ping").innerHTML = "VideoTime= "+player.currentTime+" ServerTime= "+time;
 				if( Math.abs(time - player.currentTime) > 0.2 ){
 					player.currentTime = time;
 				}
 				// console.log(time - player.currentTime)
-				console.log("VideoTime= ",player.currentTime,"ServerTime= ",time)
-				document.querySelector("#ping").innerHTML = "VideoTime= "+player.currentTime+" ServerTime= "+time;
-				const duration = Date.now() - start;
-				console.log("delay =",duration);
+				console.log("delay =",delay);
 			});
 		}, 5000);
 		player.addEventListener("pause", SendPauseEvent );
