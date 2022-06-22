@@ -59,14 +59,14 @@ export default function Room({cookies}){
 		socket.on("connect", () => { console.log(socket.id) });
 		socket.on("pause", ({ videoTime, dateEmited, user }) =>{
 			const dateNow = Date.now();
-			const emitionDelay = dateEmited - dateNow;
+			const emitionDelay = dateNow - dateEmited;
 			player.serverResp = true;
-			player.currentTime = videoTime - emitionDelay;
+			player.currentTime = (videoTime - emitionDelay) > 0? videoTime - emitionDelay : 0;
 			player.pause();
 		});
 		socket.on("play", ({ videoTime, dateEmited, user }) =>{
 			const dateNow = Date.now();
-			const emitionDelay = dateEmited - dateNow;
+			const emitionDelay = dateNow - dateEmited;
 			player.serverResp = true;
 			player.currentTime = videoTime + emitionDelay;
 			player.play();
