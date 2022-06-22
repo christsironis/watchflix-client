@@ -31,16 +31,16 @@ export default function Room({cookies}){
 			const start = Date.now();
 		  
 			socket.volatile.emit("ping", room ,(time) => {
-				if( Math.abs(time - player.currentTime) > 1 ){
+				if( Math.abs(time - player.currentTime) > 0.2 ){
 					player.currentTime = time;
 				}
-				console.log(time - player.currentTime)
+				// console.log(time - player.currentTime)
 				console.log("VideoTime= ",player.currentTime,"ServerTime= ",time)
-				document.querySelector("#ping").innerHTML = "VideoTime= "+player.currentTime+"ServerTime= "+time;
+				document.querySelector("#ping").innerHTML = "VideoTime= "+player.currentTime+" ServerTime= "+time;
 				const duration = Date.now() - start;
 				console.log("delay =",duration);
 			});
-		  }, 5000);
+		}, 5000);
 		player.addEventListener("pause", SendPauseEvent );
 		function SendPauseEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
