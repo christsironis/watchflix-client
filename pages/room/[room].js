@@ -32,7 +32,7 @@ export default function Room({cookies}){
 		  
 			socket.volatile.emit("ping", room ,(serverTime) => {
 				const delay = Date.now() - start;
-				serverTime += delay;
+				serverTime = ((delay + serverTime)/1000).toFixed(3);
 				// time< 0? time=0: null;
 				console.log("VideoTime= ",player.currentTime,"ServerTime= ",serverTime)
 				document.querySelector("#ping").innerHTML = "Delay = "+delay+" \n VideoTime= <span style='color:red;'>"+player.currentTime+" </span> \nServerTime= <span style='color:red;'> "+serverTime+"</span>";
@@ -68,7 +68,7 @@ export default function Room({cookies}){
 			const dateNow = Date.now();
 			const emitionDelay = dateNow - dateEmited;
 			player.serverResp = true;
-			player.currentTime = videoTime + (emitionDelay/1000);
+			player.currentTime = Number(videoTime) + (emitionDelay/1000);
 			player.play();
 		});
 		socket.on("addPlayer_room", ({ user, id, color }) => {
