@@ -28,10 +28,12 @@ export default function Room({cookies}){
 		document.addEventListener("drop", Drop ,true);
 		const player = document.querySelector("video");
 		setInterval(() => {
+			socket.volatile.emit("timedifference",Date.now());
+		}, 5000);
+
+		setInterval(() => {
 			const start = Date.now();
-		  
-			socket.volatile.emit("timedifference",start);
-			
+
 			socket.volatile.emit("ping", room ,(serverTime) => {
 				const delay = Date.now() - start;
 				console.log("Before ", " delay= ",delay," ServerTime= ",serverTime);
