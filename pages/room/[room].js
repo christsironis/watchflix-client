@@ -32,7 +32,7 @@ export default function Room({cookies}){
 			socket.volatile.emit("timedifferencev1",new Date().toISOString().slice(0,-1));
 		}, 5000);
 		setInterval(() => {
-			socket.volatile.emit("timedifferencev2",Date.now() - timeOffset );
+			socket.volatile.emit("timedifferencev2",Date.now() );
 		}, 5000);
 
 		// setInterval(() => {
