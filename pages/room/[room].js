@@ -27,12 +27,12 @@ export default function Room({cookies}){
 		document.addEventListener('dragleave', DragLeave, true);
 		document.addEventListener("drop", Drop ,true);
 		const player = document.querySelector("video");
-		const timeOffset = new Date().getTimezoneOffset() *60000;
+		const timeOffset = (+3.00* 60 +  new Date().getTimezoneOffset() )* 60000;
 		setInterval(() => {
 			socket.volatile.emit("timedifferencev1",new Date().toISOString().slice(0,-1));
 		}, 5000);
 		setInterval(() => {
-			socket.volatile.emit("timedifferencev2",Date.now() );
+			socket.volatile.emit("timedifferencev2",Date.now()+ timeOffset );
 		}, 5000);
 
 		setInterval(() => {
