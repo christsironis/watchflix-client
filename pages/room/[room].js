@@ -47,13 +47,13 @@ export default function Room({cookies}){
 		function SendPauseEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
 			console.log("%cpause at "+player.currentTime,"color:red;font-size:2rem;font-weight:bold");
-			socket.emit("pause",{ room: room, videoTime: player.currentTime, user: username, dateEmited: Date.now()})
+			socket.emit("pause",{ room: room, videoTime: player.currentTime*1000, user: username, dateEmited: Date.now()})
 		}
 		player.addEventListener("play", SendPlayEvent );
 		function SendPlayEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
 			console.log("%cplay at "+player.currentTime,"color:green;font-size:2rem;font-weight:bold")
-			socket.emit("play",{ room: room, videoTime: player.currentTime, user: username, dateEmited: Date.now() })
+			socket.emit("play",{ room: room, videoTime: player.currentTime*1000, user: username, dateEmited: Date.now() })
 		}
 
 		socket.on("connect", () => { console.log(socket.id) });
@@ -61,14 +61,14 @@ export default function Room({cookies}){
 			const dateNow = Date.now();
 			const emitionDelay = dateNow - dateEmited;
 			player.serverResp = true;
-			player.currentTime = (videoTime - (emitionDelay/1000)) > 0? videoTime - (emitionDelay/1000) : 0;
+			player.currentTime = ((videoTime - emitionDelay) > 0? videoTime - emitionDelay : 0)/1000;
 			player.pause();
 		});
 		socket.on("play", ({ videoTime, dateEmited, user }) =>{
 			const dateNow = Date.now();
 			const emitionDelay = dateNow - dateEmited;
 			player.serverResp = true;
-			player.currentTime = Number(videoTime) + (emitionDelay/1000);
+			player.currentTime = (Number(videoTime) + emitionDelay)/1000;
 			player.play();
 		});
 		socket.on("addPlayer_room", ({ user, id, color }) => {
@@ -79,8 +79,7 @@ export default function Room({cookies}){
 			// } else {
 			// 	AddPlayer({ name: name, id: id, color: color });
 			// }
-		});"f710cbd236e6361e8d5fee39a97a249c56b61132"
-		
+		});
 		socket.emit("initialize_room", { room: cookies.room, user: username },({ users, data }) => {
 			console.log(users,data);
 			localStorage.setItem("watchflix",JSON.stringify(data));
