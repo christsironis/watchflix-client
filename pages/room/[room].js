@@ -13,9 +13,6 @@ export default function Room({cookies}){
 	const room = cookies.room;
 	const username = cookies.username;
 	useEffect(()=>{
-		var d = new Date();
-var n = d.getTimezoneOffset();
-document.querySelector("#offset").innerHTML="timezoneOffset= "+n;
 		// async function GetSubs(title){
 		// 	fetch("https://english-subtitles.org/index.php?do=search", {
 		// 		"body": "do=search&subaction=search&story=crimes+of+the+future",
@@ -39,7 +36,7 @@ document.querySelector("#offset").innerHTML="timezoneOffset= "+n;
 
 			socket.volatile.emit("ping", room ,(serverTime) => {
 				const delay = Date.now() - start;
-				console.log("Before ", " delay= ",delay," ServerTime= ",serverTime);
+				console.log(" delay= ",delay," ServerTime= ",serverTime , " mycustomTime ",new Date(new Date().toISOString().slice(0,-1)));
 
 				serverTime = (( serverTime + delay )/1000).toFixed(3);
 
