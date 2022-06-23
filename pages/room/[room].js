@@ -28,28 +28,28 @@ export default function Room({cookies}){
 		document.addEventListener("drop", Drop ,true);
 		const player = document.querySelector("video");
 		setInterval(() => {
-			socket.volatile.emit("timedifference",new Date(new Date().toISOString().slice(0,-1)).getTime());
+			socket.volatile.emit("timedifference",new Date().toISOString().slice(0,-1));
 		}, 5000);
 
-		setInterval(() => {
-			const start =new Date(new Date().toISOString().slice(0,-1)).getTime();
+		// setInterval(() => {
+		// 	const start =new Date(new Date().toISOString().slice(0,-1)).getTime();
 
-			socket.volatile.emit("ping", room ,(serverTime) => {
-				const delay =new Date(new Date().toISOString().slice(0,-1)).getTime() - start;
-				console.log(" delay= ",delay," ServerTime= ",serverTime , " mycustomTime ",new Date(new Date().toISOString().slice(0,-1)));
+		// 	socket.volatile.emit("ping", room ,(serverTime) => {
+		// 		const delay =new Date(new Date().toISOString().slice(0,-1)).getTime() - start;
+		// 		console.log(" delay= ",delay," ServerTime= ",serverTime , " mycustomTime ",new Date(new Date().toISOString().slice(0,-1)));
 
-				serverTime = (( serverTime + delay )/1000).toFixed(3);
+		// 		serverTime = (( serverTime + delay )/1000).toFixed(3);
 
-				console.log("VideoTime= ",player.currentTime,"ServerTime= ",serverTime)
-				document.querySelector("#ping").innerHTML = " \n VideoTime= <span style='color:red;'>"+player.currentTime+" </span> \nServerTime= <span style='color:red;'> "+serverTime+"</span>";
+		// 		console.log("VideoTime= ",player.currentTime,"ServerTime= ",serverTime)
+		// 		document.querySelector("#ping").innerHTML = " \n VideoTime= <span style='color:red;'>"+player.currentTime+" </span> \nServerTime= <span style='color:red;'> "+serverTime+"</span>";
 				
-				if( Math.abs(serverTime - player.currentTime) > 0.5 ){
-					player.currentTime = serverTime;
-				}
-				// console.log(time - player.currentTime)
-				console.log("delay =",delay);
-			});
-		}, 5000);
+		// 		if( Math.abs(serverTime - player.currentTime) > 0.5 ){
+		// 			player.currentTime = serverTime;
+		// 		}
+		// 		// console.log(time - player.currentTime)
+		// 		console.log("delay =",delay);
+		// 	});
+		// }, 5000);
 		player.addEventListener("pause", SendPauseEvent );
 		function SendPauseEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
@@ -63,7 +63,7 @@ export default function Room({cookies}){
 			socket.emit("play",{ room: room, videoTime: player.currentTime*1000, user: username, dateEmited:new Date(new Date().toISOString().slice(0,-1)).getTime() })
 		}
 
-		socket.on("connect", () => { console.log(socket.id) });
+		// socket.on("connect", () => { console.log(socket.id) });
 		socket.on("pause", ({ videoTime, dateEmited, user }) =>{
 			const dateNow =new Date(new Date().toISOString().slice(0,-1)).getTime();
 			const emitionDelay = dateNow - dateEmited;
