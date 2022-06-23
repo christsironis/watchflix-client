@@ -27,12 +27,11 @@ export default function Room({cookies}){
 		document.addEventListener('dragleave', DragLeave, true);
 		document.addEventListener("drop", Drop ,true);
 		const player = document.querySelector("video");
-		const timeOffset = (+3.00* 60 +  new Date().getTimezoneOffset() )* 60000;
 		setInterval(() => {
 			socket.volatile.emit("timedifferencev1",new Date().toISOString().slice(0,-1));
 		}, 5000);
 		setInterval(() => {
-			socket.volatile.emit("timedifferencev2",Date.now()+ timeOffset );
+			socket.volatile.emit("timedifferencev2",Date.now());
 		}, 5000);
 
 		setInterval(() => {
@@ -42,15 +41,15 @@ export default function Room({cookies}){
 				const delay = Date.now() - start;
 				console.log(" delay= ",delay, " mycustomTime ",new Date().toISOString().slice(0,-1));
 
-				// serverTime = (( serverTime + delay )/1000).toFixed(3);
+				serverTime = (( serverTime + delay )/1000).toFixed(3);
 
-				// console.log("VideoTime= ",player.currentTime,"ServerTime= ",serverTime)
-				// document.querySelector("#ping").innerHTML = " \n VideoTime= <span style='color:red;'>"+player.currentTime+" </span> \nServerTime= <span style='color:red;'> "+serverTime+"</span>";
+				console.log("VideoTime= ",player.currentTime,"ServerTime= ",serverTime)
+				document.querySelector("#ping").innerHTML = " \n VideoTime= <span style='color:red;'>"+player.currentTime+" </span> \nServerTime= <span style='color:red;'> "+serverTime+"</span>";
 				
-				// if( Math.abs(serverTime - player.currentTime) > 0.5 ){
-				// 	player.currentTime = serverTime;
-				// }
-				// // console.log(time - player.currentTime)
+				if( Math.abs(serverTime - player.currentTime) > 0.5 ){
+					player.currentTime = serverTime;
+				}
+				// console.log(time - player.currentTime)
 				console.log("delay =",delay);
 			});
 		}, 5000);
@@ -69,14 +68,14 @@ export default function Room({cookies}){
 
 		// socket.on("connect", () => { console.log(socket.id) });
 		socket.on("pause", ({ videoTime, dateEmited, user }) =>{
-			const dateNow =new Date(new Date().toISOString().slice(0,-1)).getTime();
+			const dateNow =Date.now();
 			const emitionDelay = dateNow - dateEmited;
 			player.serverResp = true;
 			player.currentTime = ((videoTime - emitionDelay) > 0? videoTime - emitionDelay : 0)/1000;
 			player.pause();
 		});
 		socket.on("play", ({ videoTime, dateEmited, user }) =>{
-			const dateNow =new Date(new Date().toISOString().slice(0,-1)).getTime();
+			const dateNow =Date.now();
 			const emitionDelay = dateNow - dateEmited;
 			player.serverResp = true;
 			player.currentTime = (videoTime + emitionDelay)/1000;
