@@ -35,25 +35,25 @@ export default function Room({cookies}){
 			socket.volatile.emit("timedifferencev2",Date.now() );
 		}, 5000);
 
-		// setInterval(() => {
-		// 	const start =new Date(new Date().toISOString().slice(0,-1)).getTime();
+		setInterval(() => {
+			const start =Date.now();
 
-		// 	socket.volatile.emit("ping", room ,(serverTime) => {
-		// 		const delay =new Date(new Date().toISOString().slice(0,-1)).getTime() - start;
-		// 		console.log(" delay= ",delay," ServerTime= ",serverTime , " mycustomTime ",new Date(new Date().toISOString().slice(0,-1)));
+			socket.volatile.emit("ping", room ,(serverTime) => {
+				const delay = Date.now() - start;
+				console.log(" delay= ",delay, " mycustomTime ",new Date().toISOString().slice(0,-1));
 
-		// 		serverTime = (( serverTime + delay )/1000).toFixed(3);
+				// serverTime = (( serverTime + delay )/1000).toFixed(3);
 
-		// 		console.log("VideoTime= ",player.currentTime,"ServerTime= ",serverTime)
-		// 		document.querySelector("#ping").innerHTML = " \n VideoTime= <span style='color:red;'>"+player.currentTime+" </span> \nServerTime= <span style='color:red;'> "+serverTime+"</span>";
+				// console.log("VideoTime= ",player.currentTime,"ServerTime= ",serverTime)
+				// document.querySelector("#ping").innerHTML = " \n VideoTime= <span style='color:red;'>"+player.currentTime+" </span> \nServerTime= <span style='color:red;'> "+serverTime+"</span>";
 				
-		// 		if( Math.abs(serverTime - player.currentTime) > 0.5 ){
-		// 			player.currentTime = serverTime;
-		// 		}
-		// 		// console.log(time - player.currentTime)
-		// 		console.log("delay =",delay);
-		// 	});
-		// }, 5000);
+				// if( Math.abs(serverTime - player.currentTime) > 0.5 ){
+				// 	player.currentTime = serverTime;
+				// }
+				// // console.log(time - player.currentTime)
+				console.log("delay =",delay);
+			});
+		}, 5000);
 		player.addEventListener("pause", SendPauseEvent );
 		function SendPauseEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
