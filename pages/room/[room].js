@@ -28,20 +28,20 @@ export default function Room({cookies}){
 		document.addEventListener("drop", Drop ,true);
 		const player = document.querySelector("video");
 		setInterval(() => {
-			socket.volatile.emit("timedifference",Date.now());
+			socket.volatile.emit("timedifference",new Date(new Date().toISOString().slice(0,-1)).getTime());
 		}, 5000);
 
 		setInterval(() => {
-			const start = Date.now();
+			const start =new Date(new Date().toISOString().slice(0,-1)).getTime();
 
 			socket.volatile.emit("ping", room ,(serverTime) => {
-				const delay = Date.now() - start;
+				const delay =new Date(new Date().toISOString().slice(0,-1)).getTime() - start;
 				console.log(" delay= ",delay," ServerTime= ",serverTime , " mycustomTime ",new Date(new Date().toISOString().slice(0,-1)));
 
 				serverTime = (( serverTime + delay )/1000).toFixed(3);
 
 				console.log("VideoTime= ",player.currentTime,"ServerTime= ",serverTime)
-				document.querySelector("#ping").innerHTML = "Delay = "+delay+" \n VideoTime= <span style='color:red;'>"+player.currentTime+" </span> \nServerTime= <span style='color:red;'> "+serverTime+"</span>";
+				document.querySelector("#ping").innerHTML = " \n VideoTime= <span style='color:red;'>"+player.currentTime+" </span> \nServerTime= <span style='color:red;'> "+serverTime+"</span>";
 				
 				if( Math.abs(serverTime - player.currentTime) > 0.5 ){
 					player.currentTime = serverTime;
@@ -54,25 +54,25 @@ export default function Room({cookies}){
 		function SendPauseEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
 			console.log("%cpause at "+player.currentTime,"color:red;font-size:2rem;font-weight:bold");
-			socket.emit("pause",{ room: room, videoTime: player.currentTime*1000, user: username, dateEmited: Date.now()})
+			socket.emit("pause",{ room: room, videoTime: player.currentTime*1000, user: username, dateEmited:new Date(new Date().toISOString().slice(0,-1)).getTime()})
 		}
 		player.addEventListener("play", SendPlayEvent );
 		function SendPlayEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
 			console.log("%cplay at "+player.currentTime,"color:green;font-size:2rem;font-weight:bold")
-			socket.emit("play",{ room: room, videoTime: player.currentTime*1000, user: username, dateEmited: Date.now() })
+			socket.emit("play",{ room: room, videoTime: player.currentTime*1000, user: username, dateEmited:new Date(new Date().toISOString().slice(0,-1)).getTime() })
 		}
 
 		socket.on("connect", () => { console.log(socket.id) });
 		socket.on("pause", ({ videoTime, dateEmited, user }) =>{
-			const dateNow = Date.now();
+			const dateNow =new Date(new Date().toISOString().slice(0,-1)).getTime();
 			const emitionDelay = dateNow - dateEmited;
 			player.serverResp = true;
 			player.currentTime = ((videoTime - emitionDelay) > 0? videoTime - emitionDelay : 0)/1000;
 			player.pause();
 		});
 		socket.on("play", ({ videoTime, dateEmited, user }) =>{
-			const dateNow = Date.now();
+			const dateNow =new Date(new Date().toISOString().slice(0,-1)).getTime();
 			const emitionDelay = dateNow - dateEmited;
 			player.serverResp = true;
 			player.currentTime = (videoTime + emitionDelay)/1000;
