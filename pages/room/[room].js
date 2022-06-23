@@ -13,6 +13,9 @@ export default function Room({cookies}){
 	const room = cookies.room;
 	const username = cookies.username;
 	useEffect(()=>{
+		var d = new Date();
+var n = d.getTimezoneOffset();
+document.querySelector("#offset").innerHTML="timezoneOffset= "+n;
 		// async function GetSubs(title){
 		// 	fetch("https://english-subtitles.org/index.php?do=search", {
 		// 		"body": "do=search&subaction=search&story=crimes+of+the+future",
@@ -123,6 +126,7 @@ export default function Room({cookies}){
 		</div>
 		<div id="ping"></div>
 		<div>{router.asPath} asdlfkj</div>
+		<div id="offset"></div>
 		<video controls width="500px" height="500px" src="/video.mp4 "></video>
         </>
     );
