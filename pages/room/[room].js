@@ -32,6 +32,8 @@ export default function Room({cookies}){
 		  
 			socket.volatile.emit("ping", room ,(serverTime) => {
 				const delay = Date.now() - start;
+				console.log("Before ", " delay= ",delay," ServerTime= ",serverTime);
+
 				serverTime = (( serverTime + delay )/1000).toFixed(3);
 
 				console.log("VideoTime= ",player.currentTime,"ServerTime= ",serverTime)
