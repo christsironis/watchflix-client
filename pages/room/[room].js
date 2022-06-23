@@ -30,6 +30,8 @@ export default function Room({cookies}){
 		setInterval(() => {
 			const start = Date.now();
 		  
+			socket.volatile.emit("timedifference",start);
+			
 			socket.volatile.emit("ping", room ,(serverTime) => {
 				const delay = Date.now() - start;
 				console.log("Before ", " delay= ",delay," ServerTime= ",serverTime);
