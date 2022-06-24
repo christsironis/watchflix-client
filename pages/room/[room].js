@@ -49,6 +49,7 @@ export default function Room({cookies}){
 				
 				if( Math.abs(serverTime - player.currentTime) > 0.5 ){
 					player.currentTime = serverTime;
+					console.log("%csyncing with server","color:yellow;font-size:2rem;font-weight:bold");
 				}
 				// console.log(time - player.currentTime)
 				console.log("delay =",totalDelay);
