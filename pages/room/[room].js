@@ -59,13 +59,13 @@ export default function Room({cookies}){
 		function SendPauseEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
 			console.log("%cpause at "+player.currentTime,"color:red;font-size:2rem;font-weight:bold");
-			socket.emit("pause",{ room: room, videoTime: player.currentTime*1000, user: username, dateEmited: Date.now()})
+			socket.emit("pause",{ room: room, videoTime: player.currentTime*1000, user: username, dateEmited: new Date(new Date().toISOString().slice(0,-1))})
 		}
 		player.addEventListener("play", SendPlayEvent );
 		function SendPlayEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
 			console.log("%cplay at "+player.currentTime,"color:green;font-size:2rem;font-weight:bold")
-			socket.emit("play",{ room: room, videoTime: player.currentTime*1000, user: username, dateEmited: Date.now() })
+			socket.emit("play",{ room: room, videoTime: player.currentTime*1000, user: username, dateEmited: new Date(new Date().toISOString().slice(0,-1)) })
 		}
 
 		// socket.on("connect", () => { console.log(socket.id) });
@@ -77,8 +77,8 @@ export default function Room({cookies}){
 			player.pause();
 		});
 		socket.on("play", ({ videoTime, dateEmited, user }) =>{
-			const dateNow =Date.now();
-			const emitionDelay = dateNow - dateEmited;
+			const dateNow =new Date(new Date().toISOString().slice(0,-1)).getTime();
+			const emitionDelay = dateNow - new Date(dateEmited).getTime();
 			player.serverResp = true;
 			player.currentTime = (videoTime + emitionDelay)/1000;
 			player.play();
