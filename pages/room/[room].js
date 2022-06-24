@@ -65,7 +65,7 @@ export default function Room({cookies}){
 		player.addEventListener("play", SendPlayEvent );
 		function SendPlayEvent(e){
 			// e.preventDefault();
-			if( player.serverResp ) {console.log("server played"); player.serverResp = false; return; }
+			if( player.serverResp ) { player.serverResp = false; return; }
 			player.pause();
 			player.serverResp = true;
 			console.log("%cplay at "+player.currentTime,"color:green;font-size:2rem;font-weight:bold")
