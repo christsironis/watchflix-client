@@ -42,7 +42,7 @@ export default function Room({cookies}){
 				const serverDelay = Date.now() - dateEmited;
 				console.log(" totalDelay= ",totalDelay," serverDelay= ", serverDelay, " mycustomTime ",new Date().toISOString().slice(0,-1));
 
-				serverTime = (( serverTime  )/1000).toFixed(3);
+				serverTime = ( serverTime  /1000).toFixed(3);
 				// if( serverTime < 0){ serverTime = 0; }
 				console.log("VideoTime= ",player.currentTime,"ServerTime= ",serverTime)
 				document.querySelector("#ping").innerHTML = " \n VideoTime= <span style='color:red;'>"+player.currentTime+" </span> \nServerTime= <span style='color:red;'> "+serverTime+"</span>";
@@ -57,36 +57,31 @@ export default function Room({cookies}){
 		}, 5000);
 		player.addEventListener("pause", SendPauseEvent );
 		function SendPauseEvent(e){
-			console.log("%cpaused ","color:blue;font-size:2rem;font-weight:bold")
 			if( player.serverResp ) { player.serverResp = false; return; }
-			console.log("%cpause at "+player.currentTime,"color:red;font-size:2rem;font-weight:bold");
 			socket.emit("pause",{ room: room, videoTime: player.currentTime*1000, user: username, dateEmited: Date.now()})
+			console.log("%cpause at "+player.currentTime,"color:red;font-size:2rem;font-weight:bold");
 		}
 		player.addEventListener("play", SendPlayEvent );
 		function SendPlayEvent(e){
-			// e.preventDefault();
 			if( player.serverResp ) { player.serverResp = false; return; }
+			socket.emit("play",{ room: room, videoTime: player.currentTime*1000, user: username, dateEmited: Date.now() })
 			player.pause();
 			player.serverResp = true;
 			console.log("%cplay at "+player.currentTime,"color:green;font-size:2rem;font-weight:bold")
-			socket.emit("play",{ room: room, videoTime: player.currentTime*1000, user: username, dateEmited: Date.now() })
 		}
 
 		// socket.on("connect", () => { console.log(socket.id) });
-		socket.on("pause", ({ videoTime, dateEmited, user }) =>{
-			// const dateNow =Date.now();
-			// const emitionDelay = dateNow - dateEmited;
+		socket.on("pause", ({ videoTime, user }) =>{
 			player.serverResp = true;
-			player.currentTime = videoTime/1000;
+			player.currentTime = videoTime / 1000;
 			player.pause();
 		});
 		socket.on("play", ({ videoTime, dateEmited, user }) =>{
+			// const dateNow =Date.now();
+			// const emitionDelay = dateNow - dateEmited;
 			player.serverResp = true;
-			player.currentTime = videoTime /1000;
+			player.currentTime = videoTime / 1000;
 			player.play();
-			const dateNow =Date.now();
-			const emitionDelay = dateNow - dateEmited;
-			console.log("onPlay delay= ",emitionDelay)
 		});
 		socket.on("addPlayer_room", ({ user, id, color }) => {
 			console.log({ user, id, color })
