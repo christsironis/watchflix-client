@@ -64,11 +64,7 @@ export default function Room({cookies}){
 		player.addEventListener("play", SendPlayEvent );
 		function SendPlayEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
-			socket.emit("play",{ room: room, videoTime: player.currentTime*1000, user: username, dateEmited: Date.now() },(videoTime)=>{
-				player.serverResp = true;
-				player.currentTime = videoTime / 1000;
-				player.play();
-			});
+			socket.emit("play",{ room: room, videoTime: player.currentTime*1000, user: username, dateEmited: Date.now() })
 			player.pause();
 			player.serverResp = true;
 			console.log("%cplay at "+player.currentTime,"color:green;font-size:2rem;font-weight:bold")
