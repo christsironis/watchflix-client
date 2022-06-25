@@ -45,7 +45,7 @@ export default function Room({cookies}){
 				serverTime = ( serverTime  /1000).toFixed(3);
 				// if( serverTime < 0){ serverTime = 0; }
 				console.log("VideoTime= ",player.currentTime,"ServerTime= ",serverTime)
-				document.querySelector("#ping").innerHTML = " \n VideoTime= <span style='color:red;'>"+player.currentTime+" </span> \nServerTime= <span style='color:red;'> "+serverTime+"</span>";
+				document.querySelector("#ping").innerHTML = " \n VideoTime= <span style='color:red;'>"+player.currentTime+" </span> \nServerTime= <span style='color:red;'> "+serverTime+"</span>"+" <p>totalDelay= "+ totalDelay+"</p>";
 				
 				if( Math.abs(serverTime - player.currentTime) > 0.5 ){
 					player.currentTime = serverTime;
