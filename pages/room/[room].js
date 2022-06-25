@@ -81,11 +81,12 @@ export default function Room({cookies}){
 			player.pause();
 		});
 		socket.on("play", ({ videoTime, dateEmited, user }) =>{
+			player.serverResp = true;
+			player.currentTime = videoTime /1000;
+			player.play();
 			const dateNow =Date.now();
 			const emitionDelay = dateNow - dateEmited;
-			player.serverResp = true;
-			player.currentTime = (videoTime + emitionDelay)/1000;
-			player.play();
+			console.log("onPlay delay= ",emitionDelay)
 		});
 		socket.on("addPlayer_room", ({ user, id, color }) => {
 			console.log({ user, id, color })
