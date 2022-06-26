@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { setCookies, getCookie, removeCookies } from 'cookies-next';
 import { io } from "socket.io-client";
 import WebTorrent from 'webtorrent';
-
+import Webplayer from '../../components/webplayer';
 
 export default function Room({cookies}){
 	const router = useRouter();
@@ -130,7 +130,8 @@ export default function Room({cookies}){
 		<div>{router.asPath} asdlfkj</div>
 		<div id="offset"></div>
 		<video controls width="500px" height="500px" src="/video.mp4 "></video>
-        </>
+        <Webplayer/>
+		</>
     );
 }
 
