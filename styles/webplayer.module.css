@@ -10,6 +10,7 @@
     -ms-user-select: none;
     user-select: none;
     overflow: hidden;
+    font-size: 1rem;
 }
 .videoWrapper{
     height: 100%;
@@ -53,7 +54,6 @@
     border-radius: 10px;
     transform: translateX(-30%);
     background-color: hsl(0deg 0% 25% / 50%);
-    font-size: 3rem;
     pointer-events: none;
     display: none;
 }
@@ -65,7 +65,7 @@
     right: 10px;
     z-index: 4;
     padding: 10px 0;
-    width: 240px;
+    width: 300px;
     border-radius: 10px;
     pointer-events: all;
     display: none;
@@ -99,8 +99,10 @@
     cursor: pointer;
     border-radius: 20px;
     text-align: center;
-    padding: 5px 5%;
-    margin: 2% 10%;
+    padding: 5px 10px;
+    width: 70px;
+    margin: 2% 5%;
+    box-sizing: content-box;
 }
 .panel .itemText{
     margin: 0 auto 0 10px;
@@ -144,9 +146,7 @@
 {
     background-color: rgba(255,255,255,.1);
 }
-.selectedValue{
-    background-color: rgba(255,255,255,.1);
-}
+
 
 .bot_bar{
     z-index: 3;
@@ -158,9 +158,6 @@
     display: flex;
     justify-content: center;
     transition: opacity 0.2s ease-in-out;
-}
-.bot_bar.hideControls{
-    opacity: 0;
 }
 .buttons_bar{
     width: 100%;
@@ -262,7 +259,7 @@
     top: 0%;
     background-color: white;
 }
-.vol_value-extreme{
+.vol_value_extreme{
     left: 50%;
     width: var(--vol-Extreme,0%);
     background-color: rgb(248, 0, 0);
@@ -279,7 +276,7 @@
     align-items: center;
     cursor: pointer;
     padding: 0px 0px 0px 0px;
-    --bar: .f00;
+    --bar: #f00;
     --mouseX: 0px;
 }
 .progress:hover .prog_bar{ 
@@ -332,9 +329,4 @@
     position: absolute;
     bottom: 0%;
     left: 0%;
-}
-
-
-.show{
-    display: block;
 }

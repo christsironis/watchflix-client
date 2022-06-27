@@ -29,3 +29,12 @@
 #dragdropcont.show{
     display: flex;
 }
+div.selectedValue{
+    background-color: rgba(255,255,255,.1);
+}
+div.show{
+    display: block;
+}
+.hideControls{
+    opacity: 0;
+}

@@ -114,12 +114,12 @@
 }
 .wrapper .details {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     font-size: 1rem;
     margin: 1em 0;
     flex-wrap: wrap;
     align-items: center;
-    gap: 1em;
+    gap: 1em 4em;
 }
 .wrapper .details > *:not(a){
     position: relative;
