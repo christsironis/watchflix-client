@@ -99,7 +99,7 @@ export default function Webplayer(){
     <div id="videoContainer" className={css.videoContainer} ref={videoContainer} onMouseMove={(e)=>VideoContainerMouseMove(e,delayCtrlTimeout,botBar)}>
         <div id="videoWrapper" className={css.videoWrapper} ref={videoWrapper}>
             <video id="videoPlayer" className={css.videoPlayer} ref={video} onLoadedMetadata={(e)=> LoadedMetaData(e ,totalTime, video)} onCanPlayThrough={(e)=> CanPlayThrough(e)} onTimeUpdate={(e)=> TimeUpdate(e, video, currentTime, currentTimeSpan)} onEnded={(e)=> VideoEnded(playBut, BarTimer)} onClick={(e)=>PlayHandler(e, singleClick, dbClickTimer, playBut, audioCtx, BarTimer, video, dbDelay, videoContainer, progress )}>
-                Sorry, your browser doesn't support embedded videos.
+                Sorry, your browser doesn&apos;t support embedded videos.
             </video>
         </div>
         <div id="video-controls" className={css.video_controls} ref={videoControls}>
