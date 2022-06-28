@@ -224,7 +224,7 @@ export default function Webplayer(){
                     <span className={css.itemText}>Aspect Ratio</span>
                 </div>
                 <div id="ratioRange" className={`${css.range} ${css.disFlex}`}>
-                    <input onChange={(e)=>RationPanelInput(e,videoContainer,videoWrapper)} id="ratioValue" pattern="[0-9]+\s?:\s?[0-9]+" type="text" defaultValue="16:9"/>
+                    <input onChange={(e)=>RationPanelInput(e,videoContainer,videoWrapper)} id="ratioValue" pattern="[0-9.]+\s?:\s?[0-9.]+" type="text" defaultValue="16:9"/>
                 </div>
                 <div className={`${css.values} ${css.disFlex} values`}>
                     <div className={`${css.value} value`} data-value="16 / 9" onClick={(e)=>RationPanelValues(e,videoContainer,videoWrapper)}>
