@@ -587,8 +587,8 @@ function SpeedPanelInput(e,videoContainer){
 function RationPanelInput(e,videoContainer,videoWrapper){
     videoContainer.current.querySelector("#ratioPanel input").reportValidity();
     let value = e.target.value;
-    value = value.replace(/[^0-9:]/g,'');
-    const ratio = { ...(/(?<first>[0-9]+\s?)[:/](?<second>\s?[0-9]+)/g).exec( value )?.groups };
+    value = value.replace(/[^0-9:.]/g,'');
+    const ratio = { ...(/(?<first>[0-9.]+\s?)[:/](?<second>\s?[0-9.]+)/g).exec( value )?.groups };
     e.target.value = (ratio.first)? `${ratio.first}:${ratio.second}` : value;
     ChangeSelectedValue(`${ratio.first}:${ratio.second}`,"ratio",videoContainer);
     videoWrapper.current.style.setProperty("--ratio",`${ratio.first} / ${ratio.second}`);
