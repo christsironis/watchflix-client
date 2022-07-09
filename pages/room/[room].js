@@ -47,7 +47,7 @@ export default function Room({cookies}){
 				console.log("VideoTime= ",player.currentTime,"ServerTime= ",serverTime)
 				document.querySelector("#ping").innerHTML = " \n VideoTime= <span style='color:red;'>"+player.currentTime+" </span> \nServerTime= <span style='color:red;'> "+serverTime+"</span>"+" <p>totalDelay= "+ totalDelay+"</p>";
 				
-				if( Math.abs(serverTime - player.currentTime) > 0.5 ){
+				if( !player.paused && Math.abs(serverTime - player.currentTime) > 0.5 ){
 					player.currentTime = serverTime;
 					console.log("%csyncing with server","color:yellow;font-size:2rem;font-weight:bold");
 				}

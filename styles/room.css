@@ -38,3 +38,6 @@ div.show{
 .hideControls{
     opacity: 0;
 }
+.hideCursor{
+    cursor: none;
+}

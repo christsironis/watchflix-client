@@ -4,7 +4,6 @@ import css from "../styles/webplayer.module.css";
 export default function Webplayer(){
     const videoContainer = useRef();
     const videoControls = useRef();
-    const videoWrapper = useRef();
     const video = useRef();
     const botBar = useRef();
     const settingsPanel = useRef();
@@ -71,11 +70,11 @@ export default function Webplayer(){
         function FullScreenChange(e){
             if( document.fullscreenElement === videoContainer.current){
                 fsBut.current.setAttribute("data-state","full");
-                botBar.current.classList.add("hideControls");
+                VideoContainerMouseMove(video,delayCtrlTimeout,videoControls,videoContainer);
             } 
             else if( !document.fullscreenElement ){
                 fsBut.current.setAttribute("data-state","nofull");
-                botBar.current.classList.remove("hideControls");
+                VideoContainerMouseMove(video,delayCtrlTimeout,videoControls,videoContainer);
             }
         }
         // Wheel - Scroll Sound
@@ -96,12 +95,10 @@ export default function Webplayer(){
         }
     },[]);
     return <>
-    <div id="videoContainer" className={css.videoContainer} ref={videoContainer} onMouseMove={(e)=>VideoContainerMouseMove(e,delayCtrlTimeout,botBar)}>
-        <div id="videoWrapper" className={css.videoWrapper} ref={videoWrapper}>
-            <video id="videoPlayer" className={css.videoPlayer} ref={video} onLoadedMetadata={(e)=> LoadedMetaData(e ,totalTime, video)} onCanPlayThrough={(e)=> CanPlayThrough(e)} onTimeUpdate={(e)=> TimeUpdate(e, video, currentTime, currentTimeSpan)} onEnded={(e)=> VideoEnded(playBut, BarTimer)} onClick={(e)=>PlayHandler(e, singleClick, dbClickTimer, playBut, audioCtx, BarTimer, video, dbDelay, videoContainer, progress )}>
-                Sorry, your browser doesn&apos;t support embedded videos.
-            </video>
-        </div>
+    <div id="videoContainer" className={css.videoContainer} ref={videoContainer} onMouseMove={()=>VideoContainerMouseMove(video,delayCtrlTimeout,videoControls,videoContainer)}>
+        <video id="videoPlayer" className={css.videoPlayer} ref={video} onLoadedMetadata={(e)=> LoadedMetaData(e ,totalTime, video)} onCanPlayThrough={(e)=> CanPlayThrough(e)} onTimeUpdate={(e)=> TimeUpdate(e, video, currentTime, currentTimeSpan)} onEnded={(e)=> VideoEnded(playBut, BarTimer)} onClick={(e)=>PlayHandler(e, singleClick, dbClickTimer, playBut, audioCtx, BarTimer, video, dbDelay, videoContainer, progress )}>
+            Sorry, your browser doesn&apos;t support embedded videos.
+        </video>
         <div id="video-controls" className={css.video_controls} ref={videoControls}>
             <div id="vol-Indicator" className={css.vol_Indicator} ref={volIndic}>100%</div>
             <div className={`${css.panel} ${css.settingsPanel} panel`} id="settingsPanel" ref={settingsPanel}>
@@ -224,28 +221,28 @@ export default function Webplayer(){
                     <span className={css.itemText}>Aspect Ratio</span>
                 </div>
                 <div id="ratioRange" className={`${css.range} ${css.disFlex}`}>
-                    <input onChange={(e)=>RationPanelInput(e,videoContainer,videoWrapper)} id="ratioValue" pattern="[0-9.]+\s?:\s?[0-9.]+" type="text" defaultValue="16:9"/>
+                    <input onChange={(e)=>RationPanelInput(e,videoContainer,video)} id="ratioValue" pattern="[0-9.]+\s?:\s?[0-9.]+" type="text" defaultValue="16:9"/>
                 </div>
                 <div className={`${css.values} ${css.disFlex} values`}>
-                    <div className={`${css.value} value`} data-value="16 / 9" onClick={(e)=>RationPanelValues(e,videoContainer,videoWrapper)}>
+                    <div className={`${css.value} value`} data-value="16 / 9" onClick={(e)=>RationPanelValues(e,videoContainer,video)}>
                         16 : 9
                     </div>
-                    <div className={`${css.value} value`} data-value="16 / 10" onClick={(e)=>RationPanelValues(e,videoContainer,videoWrapper)}>
+                    <div className={`${css.value} value`} data-value="16 / 10" onClick={(e)=>RationPanelValues(e,videoContainer,video)}>
                         16 : 10
                     </div>
-                    <div className={`${css.value} value`} data-value="1 / 1" onClick={(e)=>RationPanelValues(e,videoContainer,videoWrapper)}>
+                    <div className={`${css.value} value`} data-value="1 / 1" onClick={(e)=>RationPanelValues(e,videoContainer,video)}>
                         1 : 1
                     </div>
-                    <div className={`${css.value} value`} data-value="3 / 2" onClick={(e)=>RationPanelValues(e,videoContainer,videoWrapper)}>
+                    <div className={`${css.value} value`} data-value="3 / 2" onClick={(e)=>RationPanelValues(e,videoContainer,video)}>
                         3 : 2
                     </div>
-                    <div className={`${css.value} value`} data-value="4 / 3" onClick={(e)=>RationPanelValues(e,videoContainer,videoWrapper)}>
+                    <div className={`${css.value} value`} data-value="4 / 3" onClick={(e)=>RationPanelValues(e,videoContainer,video)}>
                         4 : 3
                     </div>
-                    <div className={`${css.value} value`} data-value="9 / 16" onClick={(e)=>RationPanelValues(e,videoContainer,videoWrapper)}>
+                    <div className={`${css.value} value`} data-value="9 / 16" onClick={(e)=>RationPanelValues(e,videoContainer,video)}>
                         9 : 16
                     </div>
-                    <div className={`${css.value} value selectedValue`} data-value="auto" onClick={(e)=>RationPanelValues(e,videoContainer,videoWrapper)}>
+                    <div className={`${css.value} value selectedValue`} data-value="auto" onClick={(e)=>RationPanelValues(e,videoContainer,video)}>
                         Default
                     </div>
                 </div>
@@ -272,7 +269,7 @@ export default function Webplayer(){
                     </div>
                     <div id="timer" className={css.timer}>
                         <span id="currentTime" ref={currentTimeSpan}>0:00</span>
-                        <span>/</span>
+                        <span> / </span>
                         <span id="totalTime" ref={totalTime}>0:00</span>
                     </div>
                     <button className={css.button} id="subs" ref={subs} aria-label="no subs" title="no subs">
@@ -303,7 +300,7 @@ export default function Webplayer(){
                         </svg>
                     </button>
                 </div>
-                <div id="progress" className={css.progress} ref={progress} onMouseMove={(e)=> MouseMove(e, video, progress,progBar, progBarLabel, hoveredTime)} onMouseDown={(e)=> MouseDown( video, playBut, progress, hoveredTime )} onMouseLeave={()=> MouseLeave( progress )}>
+                <div id="progress" className={css.progress} ref={progress} onMouseMove={(e)=> MouseMove(e, video, progress,progBar, progBarLabel, hoveredTime)} onMouseDown={(e)=> MouseDown( video, playBut, progress, hoveredTime, progBar )} onMouseLeave={()=> MouseLeave( progress )}>
                     <span id="prog-bar-label" className={css.prog_bar_label} ref={progBarLabel}>0:00</span>
                     <div id="prog-bar" className={css.prog_bar} ref={progBar}>
                         <span id="bar-hover" className={css.bar_hover}></span>
@@ -341,13 +338,14 @@ function MouseMove(e, video, progress,progBar, progBarLabel, hoveredTime){
         progBarLabel.current.innerHTML = VidDurationFormat( hoveredTime.current ); 
     }
 } 
-function MouseDown( video, playBut, progress, hoveredTime) {
-    document.onmousemove= (e)=> TimelineMouseMove(e, video, progress , hoveredTime);
+function MouseDown( video, playBut, progress, hoveredTime, progBar) {
+    document.onmousemove= (e)=> TimelineMouseMove(e, video, progress, hoveredTime, progBar);
     document.onmouseup= (e)=> TimelineMouseUp( video, playBut, progress, hoveredTime);
 }
-function TimelineMouseMove(e, video, progress , hoveredTime){
+function TimelineMouseMove(e, video, progress ,hoveredTime, progBar){
     let x = e.clientX - progress.current.getBoundingClientRect().left;
     if( x >= 0){ 
+        hoveredTime.current = (x / progBar.current.clientWidth) * video.current.duration;
         video.current.currentTime = hoveredTime.current; 
         MoveProgBar(video, progress);
     }
@@ -538,13 +536,17 @@ function PipHandler(pip,video){
     }
 }
 // show - hide controls
-function VideoContainerMouseMove(e,delayCtrlTimeout,botBar){
+function VideoContainerMouseMove(video,delayCtrlTimeout,videoControls,videoContainer){
     if(delayCtrlTimeout.current !== undefined){
-        botBar.current.classList.remove("hideControls");
+        videoControls.current.classList.remove("hideControls");
+        videoContainer.current.classList.remove("hideCursor");
         clearTimeout(delayCtrlTimeout.current);
     }
     delayCtrlTimeout.current = setTimeout(() => {
-        botBar.current.classList.add("hideControls");
+        if( !video.current.paused ){
+            videoControls.current.classList.add("hideControls");
+            videoContainer.current.classList.add("hideCursor");
+        }
         delayCtrlTimeout.current = undefined;
     }, 2000);  
 }
@@ -584,20 +586,20 @@ function SpeedPanelInput(e,videoContainer){
 }
 
 // RatioPanel
-function RationPanelInput(e,videoContainer,videoWrapper){
+function RationPanelInput(e,videoContainer,video){
     videoContainer.current.querySelector("#ratioPanel input").reportValidity();
     let value = e.target.value;
     value = value.replace(/[^0-9:.]/g,'');
     const ratio = { ...(/(?<first>[0-9.]+\s?)[:/](?<second>\s?[0-9.]+)/g).exec( value )?.groups };
     e.target.value = (ratio.first)? `${ratio.first}:${ratio.second}` : value;
     ChangeSelectedValue(`${ratio.first}:${ratio.second}`,"ratio",videoContainer);
-    videoWrapper.current.style.setProperty("--ratio",`${ratio.first} / ${ratio.second}`);
+    video.current.style.setProperty("--ratio",`${ratio.first} / ${ratio.second}`);
 }
-function RationPanelValues(e,videoContainer,videoWrapper){
+function RationPanelValues(e,videoContainer,video){
     videoContainer.current.querySelector("#ratioPanel .values .selectedValue")?.classList.remove("selectedValue");
     let value = e.target.getAttribute("data-value");
     e.target.classList.add("selectedValue");
-    videoWrapper.current.style.setProperty("--ratio", value);
+    video.current.style.setProperty("--ratio", value);
     value = value.replace("/",':');
     videoContainer.current.querySelector("#ratioPanel input").value = value;
     videoContainer.current.querySelector("[data-but='ratio'] .itemChoice").innerHTML = value;
