@@ -29,6 +29,22 @@
 #dragdropcont.show{
     display: flex;
 }
+.subscontainer{
+    display: none;
+    width: 100%;
+    font-size: 1rem;
+    flex-direction: column;
+    gap: 20px;
+}
+.subscontainer .sub{
+    cursor: pointer;
+}
+.subscontainer .sub .lang{
+    color: var(--color2);
+}
+.showFlex{
+    display: flex;
+}
 div.selectedValue{
     background-color: rgba(255,255,255,.1);
 }

@@ -89,9 +89,9 @@ export default function Webplayer(){
             }
         }
         return ()=>{
-            video.current.removeEventListener("wheel",VideoWheel, {passive: false});
+            // video.current.removeEventListener("wheel",VideoWheel, {passive: false});
             document.removeEventListener('fullscreenchange', FullScreenChange);
-            videoContainer.current.removeEventListener('leavepictureinpicture', LeavePictureinPicture);
+            // videoContainer.current.removeEventListener('leavepictureinpicture', LeavePictureinPicture);
         }
     },[]);
     return <>

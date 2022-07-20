@@ -131,10 +131,37 @@ export default function Room({cookies}){
 		<div id="offset"></div>
 		<video controls width="500px" height="500px" src="/video.mp4 "></video>
         <Webplayer/>
+		<button id='subsbutton' onClick={FindSubs}>Find Subs</button>
+		<div className="subscontainer">
+
+		</div>
 		</>
     );
 }
-
+async function FindSubs(){
+	const subsCont = document.querySelector(".subscontainer");
+	subsCont.classList.toggle("showFlex");
+	if(!subsCont.classList.contains("showFlex")) return;
+	const storage = await JSON.parse(localStorage.getItem("watchflix"));
+	let data = "";
+	if( storage.type === "serie" ){
+		data = `&season=${storage.season}&episode=${storage.episode}`;
+	}
+	const request = await fetch(`/api/subs?id=${storage.imdbID}${data}`);
+	const json = await request.json();
+	subsCont.innerHTML = "";
+	console.log(json)
+	for(let sub of json.data){
+		subsCont.innerHTML += `<div class="sub" data-fileID="${sub.attributes.files[0].file_id}" data-language="${sub.attributes.language}" data-url="${sub.attributes.url}"><span class="lang">${sub.attributes.language}</span> class${sub.attributes.release}</div>` 
+	}
+	for(let item of document.querySelectorAll(".subscontainer .sub")){
+		item.addEventListener("click",async ()=>{
+			const request = await fetch(`/api/subs?download=${item.getAttribute("data.fileID")}`);
+			const json = await request.json();
+			console.log(json)
+		});
+	}
+}
 function DragEnter(e) {
     e.stopPropagation();
 	if (!e.relatedTarget) {
@@ -170,6 +197,9 @@ async function Drop(e) {
 		else if(file.name.match('.srt$') ){
 			const textTrackUrl = await toWebVTT(file);
 			AddSubTrack( player, file, textTrackUrl );
+		}
+		else{
+			alert("Doesn't support file type!");
 		}
 	  }
 	}
