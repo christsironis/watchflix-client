@@ -12,6 +12,7 @@ export default function Room({cookies}){
 	const router = useRouter();
 	const room = cookies.room;
 	const username = cookies.username;
+	let player;
 	useEffect(()=>{
 		// async function GetSubs(title){
 		// 	fetch("https://english-subtitles.org/index.php?do=search", {
@@ -26,7 +27,7 @@ export default function Room({cookies}){
 		document.addEventListener('dragover', DragOver, true);
 		document.addEventListener('dragleave', DragLeave, true);
 		document.addEventListener("drop", Drop ,true);
-		const player = document.querySelector("video");
+		player = document.querySelector("video");
 		setInterval(() => {
 			socket.volatile.emit("timedifferencev1",new Date().toISOString().slice(0,-1));
 		}, 5000);
@@ -129,16 +130,16 @@ export default function Room({cookies}){
 		<div id="ping"></div>
 		<div>{router.asPath} asdlfkj</div>
 		<div id="offset"></div>
-		<video controls width="500px" height="500px" src="/video.mp4 "></video>
+		<video crossOrigin="anonymous" controls width="500px" height="500px" src="/video.mp4 "></video>
         <Webplayer/>
-		<button id='subsbutton' onClick={FindSubs}>Find Subs</button>
+		<button id='subsbutton' onClick={()=>FindSubs(player)}>Find Subs</button>
 		<div className="subscontainer">
 
 		</div>
 		</>
     );
 }
-async function FindSubs(){
+async function FindSubs(player){
 	const subsCont = document.querySelector(".subscontainer");
 	subsCont.classList.toggle("showFlex");
 	if(!subsCont.classList.contains("showFlex")) return;
@@ -150,15 +151,19 @@ async function FindSubs(){
 	const request = await fetch(`/api/subs?id=${storage.imdbID}${data}`);
 	const json = await request.json();
 	subsCont.innerHTML = "";
-	console.log(json)
-	for(let sub of json.data){
-		subsCont.innerHTML += `<div class="sub" data-fileID="${sub.attributes.files[0].file_id}" data-language="${sub.attributes.language}" data-url="${sub.attributes.url}"><span class="lang">${sub.attributes.language}</span> class${sub.attributes.release}</div>` 
+
+	for(let item of Object.keys(json).sort()){
+		for(let sub of json[item]){
+			subsCont.innerHTML += `<div class="sub" data-fileID="${sub.attributes.files[0].file_id}" data-language="${sub.attributes.language}" data-url="${sub.attributes.url}"><span class="lang">${sub.langName}</span>  ${sub.attributes.release}</div>` 
+		}
 	}
 	for(let item of document.querySelectorAll(".subscontainer .sub")){
 		item.addEventListener("click",async ()=>{
-			const request = await fetch(`/api/subs?download=${item.getAttribute("data.fileID")}`);
+			const request = await fetch(`/api/subs?download=${item.getAttribute("data-fileid")}`);
 			const json = await request.json();
-			console.log(json)
+			AddSubTrack(player,json.name,json.link, item.getAttribute("data-language"));
+			console.log("sub added from opensubs: ",json);
+			
 		});
 	}
 }
@@ -181,7 +186,6 @@ function DragLeave(e) {
 async function Drop(e) {
 	e.preventDefault();
 	document.querySelector("#dragdropcont")?.classList.remove("show");
-	const player = document.querySelector("video");
 
 	if (e.dataTransfer.items) {
 	  for (let i = 0; i < e.dataTransfer.items.length; i++) {
@@ -192,11 +196,11 @@ async function Drop(e) {
 			player.src = link;
 		}
 		else if (file.name.match('.vtt$') ) {
-			AddSubTrack( player, file, URL.createObjectURL(file) );
+			AddSubTrack( player, file.name, URL.createObjectURL(file) );
 		}
 		else if(file.name.match('.srt$') ){
 			const textTrackUrl = await toWebVTT(file);
-			AddSubTrack( player, file, textTrackUrl );
+			AddSubTrack( player, file.name, textTrackUrl );
 		}
 		else{
 			alert("Doesn't support file type!");
@@ -204,15 +208,15 @@ async function Drop(e) {
 	  }
 	}
 }
-function AddSubTrack( player, file, url){
+function AddSubTrack( player, name, url, isoLang = "undefined"){
 	const track = document.createElement("track");
 	track.kind = "subtitles"; 
-	track.label = file.name;
-	track.srclang = "en"
+	track.label = name;
+	track.srclang = isoLang;
 	track.src = url;
 	player.append(track);
 	const items = player.textTracks.length;
-	for (const i = 0; i < items -1; i++) {
+	for (let i = 0; i < items -1; i++) {
 		player.textTracks[i].mode = 'hidden';
 	}
 	player.textTracks[ items - 1 ].mode = 'showing';
