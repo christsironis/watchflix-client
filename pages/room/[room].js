@@ -13,6 +13,7 @@ export default function Room({cookies}){
 	const room = cookies.room;
 	const username = cookies.username;
 	let player;
+	let socket;
 	useEffect(()=>{
 		// async function GetSubs(title){
 		// 	fetch("https://english-subtitles.org/index.php?do=search", {
@@ -21,7 +22,7 @@ export default function Room({cookies}){
 		// 	  }).then(res=> res.text()).then(res=>console.log(res));
 		//   }
 		// GetSubs("iron-man");
-		const socket = io(process.env.NEXT_PUBLIC_SERVER, { transports: ['websocket'] });
+		socket = io(process.env.NEXT_PUBLIC_SERVER, { transports: ['websocket'] });
 		// const webtorrent = new WebTorrent();
 		document.addEventListener('dragenter', DragEnter, true);
 		document.addEventListener('dragover', DragOver, true);
@@ -93,6 +94,9 @@ export default function Room({cookies}){
 			// 	AddPlayer({ name: name, id: id, color: color });
 			// }
 		});
+		socket.on("addSub", ({name,url,language,langIso}) => {
+			AddSubTrack( player, name, url, langIso, true );
+		});
 		socket.emit("initialize_room", { room: cookies.room, user: username },({ users, data }) => {
 			console.log(users,data);
 			localStorage.setItem("watchflix",JSON.stringify(data));
@@ -132,14 +136,14 @@ export default function Room({cookies}){
 		<div id="offset"></div>
 		<video crossOrigin="anonymous" controls width="500px" height="500px" src="/video.mp4 "></video>
         <Webplayer/>
-		<button id='subsbutton' onClick={()=>FindSubs(player)}>Find Subs</button>
+		<button id='subsbutton' onClick={()=>FindSubs(player,socket,room)}>Find Subs</button>
 		<div className="subscontainer">
 
 		</div>
 		</>
     );
 }
-async function FindSubs(player){
+async function FindSubs(player,socket,room){
 	const subsCont = document.querySelector(".subscontainer");
 	subsCont.classList.toggle("showFlex");
 	if(!subsCont.classList.contains("showFlex")) return;
@@ -154,16 +158,16 @@ async function FindSubs(player){
 
 	for(let item of Object.keys(json).sort()){
 		for(let sub of json[item]){
-			subsCont.innerHTML += `<div class="sub" data-fileID="${sub.attributes.files[0].file_id}" data-language="${sub.attributes.language}" data-url="${sub.attributes.url}"><span class="lang">${sub.langName}</span>  ${sub.attributes.release}</div>` 
+			subsCont.innerHTML += `<div class="sub" data-fileID="${sub.attributes.files[0].file_id}" language="${sub.langName}" language-iso="${sub.attributes.language}" data-url="${sub.attributes.url}"><span class="lang">${sub.langName}</span>  ${sub.attributes.release}</div>` 
 		}
 	}
 	for(let item of document.querySelectorAll(".subscontainer .sub")){
 		item.addEventListener("click",async ()=>{
 			const request = await fetch(`/api/subs?download=${item.getAttribute("data-fileid")}`);
 			const json = await request.json();
-			AddSubTrack(player,json.name,json.link, item.getAttribute("data-language"));
+			AddSubTrack(player,json.name,json.link, item.getAttribute("language-iso"));
 			console.log("sub added from opensubs: ",json);
-			
+			socket.emit("addSub",{ room: room,name: json.name, url: json.link, language: item.getAttribute("language"), langIso: item.getAttribute("language-iso")});
 		});
 	}
 }
@@ -208,18 +212,21 @@ async function Drop(e) {
 	  }
 	}
 }
-function AddSubTrack( player, name, url, isoLang = "undefined"){
-	const track = document.createElement("track");
+function AddSubTrack( player, name, url, isoLang = "undefined", makeDefault = false){
+	const sameTrack = document.querySelector(`video track[label='${name}'][srclang='${isoLang}']`);
+	const track = sameTrack ? sameTrack : document.createElement("track");
 	track.kind = "subtitles"; 
 	track.label = name;
 	track.srclang = isoLang;
 	track.src = url;
 	player.append(track);
-	const items = player.textTracks.length;
-	for (let i = 0; i < items -1; i++) {
-		player.textTracks[i].mode = 'hidden';
+	if(makeDefault){
+		const items = player.textTracks.length;
+		for (let i = 0; i < items -1; i++) {
+			player.textTracks[i].mode = 'hidden';
+		}
+		player.textTracks[ items - 1 ].mode = 'showing';
 	}
-	player.textTracks[ items - 1 ].mode = 'showing';
 }
 export async function getServerSideProps({req, params, res}) {
 	const cookie = await JSON.parse(req.cookies["watchflix"] ?? null);
