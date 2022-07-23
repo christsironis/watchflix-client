@@ -59,7 +59,7 @@
     right: 10px;
     z-index: 4;
     padding: 10px 0;
-    width: 300px;
+    width: 400px;
     border-radius: 10px;
     pointer-events: all;
     display: none;
@@ -141,7 +141,21 @@
     background-color: rgba(255,255,255,.1);
 }
 
-
+.subsSettings{
+    padding: 10px 25px;
+}
+.subsSettings .field{
+    padding: 5px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.subsSettings .input{
+    width: 150px;
+    position: relative;
+    font-size: 1.05rem;
+    cursor: pointer;
+}
 .bot_bar{
     z-index: 3;
     pointer-events: all;

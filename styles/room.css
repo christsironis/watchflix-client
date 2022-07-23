@@ -35,14 +35,15 @@
     font-size: 1rem;
     flex-direction: column;
     gap: 20px;
+    padding-top: 50px;
 }
 .subscontainer .sub{
     cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 20%;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    justify-content: space-around;
 }
-.subscontainer .sub .lang{
+.subscontainer .sub .subLang{
     color: var(--color2);
 }
 .showFlex{

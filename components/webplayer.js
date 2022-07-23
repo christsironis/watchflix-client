@@ -114,12 +114,12 @@ export default function Webplayer(){
                         </g>
                     </svg>
                 </div>
-                <div id="subtitles" data-but="subtitles" className={css.settingsItem} onClick={(e)=>SettingsItemsClick(e,settingsPanel,videoContainer)}>
+                <div id="subtitles" data-but="subs-settings" className={css.settingsItem} onClick={(e)=>SettingsItemsClick(e,settingsPanel,videoContainer)}>
                     <svg viewBox="0 0 24 24" className={css.itemSVG}>
                         <path d="M6,14v-4c0-0.55,.45-1,1-1h3c0.55,0,1,.45,1,1v1H9.5v-0.5h-2v3h2V13H11v1c0,.55-0.45,1-1,1H7C6.45,15,6,14.55,6,14z            M14,15h3c0.55,0,1-0.45,1-1v-1h-1.5v0.5h-2v-3h2V11H18v-1c0-0.55-0.45-1-1-1h-3c-0.55,0-1,.45-1,1v4C13,14.55,13.45,15,14,15z            M20,4H4v16h16V4 M21,3v18H3V3.01C3,3,3,3,3.01,3H21L21,3z" fill="white"></path>
                     </svg>
                     <span className={css.itemText}>Subtitles</span>
-                    <span className={`${css.itemChoice} itemChoice`}>English</span> 
+                    <span className={`${css.itemChoice} itemChoice`}>Settings</span> 
                     <svg viewBox="0 0 300.000000 300.000000" className={css.arrowSVG}>
                         <g transform="translate(0.000000,300.000000) scale(0.100000,-0.100000)" fill="#ffffff" stroke="none">
                             <path d="M775 2981 c-48 -22 -87 -60 -109 -105 -21 -44 -20 -128 1 -174 10 -24 230 -252 597 -620 l581 -582 -581 -583 c-367 -367 -587 -595 -597 -619 -21 -46 -22 -130 -1 -174 34 -71 114 -124 189 -124 89 0 95 6 778 688 357 356 663 667 680 692 29 41 32 52 32 120 0 68 -3 79 -32 120 -17 25 -323 336 -680 692 -496 495 -659 652 -693 667 -56 25 -113 26 -165 2z"/>
@@ -155,7 +155,7 @@ export default function Webplayer(){
                     </svg>
                     <span className={css.itemText}>Speed</span>
                 </div>
-                <div id="speedRange" className={`${css.range} ${css.disFlex}`}>
+                <div id="speedRange" className={`${css.disFlex}`}>
                     <div className={css.arrows}>
                         <svg className={css.arrowSVG} onClick={(e)=>SpeedRangeArrows(e,speedValue,video)} data-step="-0.5" viewBox="0 0 300.000000 300.000000">
                             <g transform="translate(0.000000,300.000000) scale(0.100000,-0.100000)">
@@ -208,6 +208,63 @@ export default function Webplayer(){
                     </div>
                     <div className={`${css.value} value`} onClick={(e)=>SpeedPanelValues(e,videoContainer,speedValue,video)}>
                         2.00
+                    </div>
+                </div>
+            </div>
+            <div className={`${css.panel} panel`} id="subsSetPanel" data-panel="subs-settings">
+                <div className={`${css.head} ${css.disFlex} head`} onClick={(e)=>VideoCtrlPanelsHead(e,settingsPanel)}>
+                    <svg viewBox="0 0 300.000000 300" className={css.arrowSVG}>
+                        <g transform="translate(0.000000,300.000000) scale(0.100000,-0.100000)">
+                        <path d="M2054 2975 c-66 -33 -1365 -1331 -1389 -1387 -19 -48 -19 -128 0 -176 24 -56 1323 -1354 1389 -1387 64 -32 118 -32 183 0 69 35 106 88 111 165 8 111 32 82 -606 723 l-586 587 586 588 c638 640 614 611 606 722 -5 77 -42 130 -111 165 -65 32 -119 32 -183 0z"/>
+                        </g>
+                    </svg>
+                    <span className={css.itemText}>Subtitles Settings</span>
+                </div>
+                <div id="subsSettings" className={`${css.subsSettings}`}>
+                    <div id="charEdge" className={`${css.field}`}>
+                        <span>Character Edge</span>
+                        <select className={`${css.input}`} name="charEdge">
+                            <option selected value="none">None</option>
+                            <option value="raised">Raised</option>
+                            <option value="depressed">Depressed</option>
+                            <option value="uniform">Uniform</option>
+                            <option value="drop shahow">Drop Shahow</option>
+                        </select>
+                    </div>
+                    <div id="fontFamily" className={`${css.field}`}>
+                        <span>Font-Family</span>
+                        <select name="fontFamily" className={`${css.input}`}>
+                            <option selected value={'Arial'}>Arial</option>
+                            <option value={'Verdana'}>Verdana</option>
+                            <option value={'Helvetica'}>Helvetica</option>
+                            <option value={'Tahoma'}>Tahoma</option>
+                            <option value={'Trebuchet MS'}>Trebuchet MS</option>
+                            <option value={'Times New Roman'}>Times New Roman</option>
+                            <option value={'Georgia'}>Georgia</option>
+                            <option value={'Garamond'}>Garamond</option>
+                            <option value={'Courier New'}>Courier New</option>
+                            <option value={'Brush Script MT'}>Brush Script MT</option>
+                        </select>
+                    </div>
+                    <div id="fontSize" className={`${css.field}`}>
+                        <span>Font-Size</span>
+                        <div><input min="0" defaultValue={100} type="number" className={`${css.input}`}></input>%</div>
+                    </div>
+                    <div id="fontColor" className={`${css.field}`}>
+                        <span>Font-Color</span>
+                        <input type="color" defaultValue={"#FFFFFF"} className={`${css.input}`}></input>
+                    </div>
+                    <div id="opacity" className={`${css.field}`}>
+                        <span>Font-Opacity</span>
+                        <input min="0" max="1" step={0.05} defaultValue={1} type="number" className={`${css.input}`}></input>
+                    </div>
+                    <div id="backgroundColor" className={`${css.field}`}>
+                        <span>Background Color</span>
+                        <input type="color" defaultValue={"#000000"} className={`${css.input}`}></input>
+                    </div>
+                    <div id="backgroundOpacity" className={`${css.field}`}>
+                        <span>Background Opacity</span>
+                        <input min="0" max="1" step={0.05} defaultValue={1} type="number" className={`${css.input}`}></input>
                     </div>
                 </div>
             </div>

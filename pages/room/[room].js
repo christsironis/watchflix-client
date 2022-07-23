@@ -15,13 +15,6 @@ export default function Room({cookies}){
 	let player;
 	let socket;
 	useEffect(()=>{
-		// async function GetSubs(title){
-		// 	fetch("https://english-subtitles.org/index.php?do=search", {
-		// 		"body": "do=search&subaction=search&story=crimes+of+the+future",
-		// 		"method": "POST"
-		// 	  }).then(res=> res.text()).then(res=>console.log(res));
-		//   }
-		// GetSubs("iron-man");
 		socket = io(process.env.NEXT_PUBLIC_SERVER, { transports: ['websocket'] });
 		// const webtorrent = new WebTorrent();
 		document.addEventListener('dragenter', DragEnter, true);
@@ -72,7 +65,6 @@ export default function Room({cookies}){
 			console.log("%cplay at "+player.currentTime,"color:green;font-size:2rem;font-weight:bold")
 		}
 
-		// socket.on("connect", () => { console.log(socket.id) });
 		socket.on("pause", ({ videoTime, user }) =>{
 			player.serverResp = true;
 			player.currentTime = videoTime / 1000;
@@ -97,9 +89,13 @@ export default function Room({cookies}){
 		socket.on("addSub", ({name,url,language,langIso}) => {
 			AddSubTrack( player, name, url, langIso, true );
 		});
-		socket.emit("initialize_room", { room: cookies.room, user: username },({ users, data }) => {
-			console.log(users,data);
-			localStorage.setItem("watchflix",JSON.stringify(data));
+		socket.emit("initialize_room", { room: cookies.room, user: username },({ users, subs}) => {
+			console.log(users,subs);
+			for (const code in subs) {
+				for (const sub in subs[code]) {
+					AddSubTrack( player, subs[code][sub].name, subs[code][sub].url, subs[code][sub].langIso );
+				}
+			}
 			// console.log(webtorrent)
 			// webtorrent.add(data.magnet, function (torrent) {
 			// 	// Got torrent metadata!
@@ -158,7 +154,7 @@ async function FindSubs(player,socket,room){
 
 	for(let item of Object.keys(json).sort()){
 		for(let sub of json[item]){
-			subsCont.innerHTML += `<div class="sub" data-fileID="${sub.attributes.files[0].file_id}" language="${sub.langName}" language-iso="${sub.attributes.language}" data-url="${sub.attributes.url}"><span class="lang">${sub.langName}</span>  ${sub.attributes.release}</div>` 
+			subsCont.innerHTML += `<div class="sub" data-fileID="${sub.attributes.files[0].file_id}" language="${sub.langName}" language-iso="${sub.attributes.language}" data-url="${sub.attributes.url}"><span class="subLang">${sub.langName}</span><span class="subName">${sub.attributes.release}</span></div>` 
 		}
 	}
 	for(let item of document.querySelectorAll(".subscontainer .sub")){
@@ -169,6 +165,23 @@ async function FindSubs(player,socket,room){
 			console.log("sub added from opensubs: ",json);
 			socket.emit("addSub",{ room: room,name: json.name, url: json.link, language: item.getAttribute("language"), langIso: item.getAttribute("language-iso")});
 		});
+	}
+}
+function AddSubTrack( player, name, url, isoLang = "undefined", makeDefault = false){
+	player = document.querySelector("#videoPlayer");
+	const sameTrack = document.querySelector(`video track[label='${name}'][srclang='${isoLang}']`);
+	const track = sameTrack ? sameTrack : document.createElement("track");
+	track.kind = "subtitles"; 
+	track.label = name;
+	track.srclang = isoLang;
+	track.src = url;
+	player.append(track);
+	if(makeDefault){
+		const items = player.textTracks.length;
+		for (let i = 0; i < items -1; i++) {
+			player.textTracks[i].mode = 'hidden';
+		}
+		player.textTracks[ items - 1 ].mode = 'showing';
 	}
 }
 function DragEnter(e) {
@@ -212,22 +225,7 @@ async function Drop(e) {
 	  }
 	}
 }
-function AddSubTrack( player, name, url, isoLang = "undefined", makeDefault = false){
-	const sameTrack = document.querySelector(`video track[label='${name}'][srclang='${isoLang}']`);
-	const track = sameTrack ? sameTrack : document.createElement("track");
-	track.kind = "subtitles"; 
-	track.label = name;
-	track.srclang = isoLang;
-	track.src = url;
-	player.append(track);
-	if(makeDefault){
-		const items = player.textTracks.length;
-		for (let i = 0; i < items -1; i++) {
-			player.textTracks[i].mode = 'hidden';
-		}
-		player.textTracks[ items - 1 ].mode = 'showing';
-	}
-}
+
 export async function getServerSideProps({req, params, res}) {
 	const cookie = await JSON.parse(req.cookies["watchflix"] ?? null);
 	let returnCookie = {...cookie , room: params.room, error: null};
