@@ -55,7 +55,7 @@ export default function Webplayer(){
         volumeStep = halfBarWidth/40;
         if( AudioGainNode.current === null ){
             audioCtx.current = new (window.AudioContext || window.webkitAudioContext)();
-            AudioGainNode.current = AudioGain( document.querySelector("#videoPlayer"), audioCtx );
+            AudioGainNode.current = AudioGain( video.current, audioCtx );
         }
 
         SetVolumeSettings( {clientX : barOffsetLeft + halfBarWidth }, vol,volPin,barWidth,halfBarWidth,barOffsetLeft,gain,maxGain,volIndic,AudioGainNode,volBar,indicatorTimeout,showIndicator );
@@ -96,7 +96,7 @@ export default function Webplayer(){
     },[]);
     return <>
     <div id="videoContainer" className={css.videoContainer} ref={videoContainer} onMouseMove={()=>VideoContainerMouseMove(video,delayCtrlTimeout,videoControls,videoContainer)}>
-        <video id="videoPlayer" className={css.videoPlayer} ref={video} onLoadedMetadata={(e)=> LoadedMetaData(e ,totalTime, video)} onCanPlayThrough={(e)=> CanPlayThrough(e)} onTimeUpdate={(e)=> TimeUpdate(e, video, currentTime, currentTimeSpan)} onEnded={(e)=> VideoEnded(playBut, BarTimer)} onClick={(e)=>PlayHandler(e, singleClick, dbClickTimer, playBut, audioCtx, BarTimer, video, dbDelay, videoContainer, progress )}>
+        <video id="videoPlayer" crossOrigin='anonymous' className={css.videoPlayer} ref={video} onLoadedMetadata={(e)=> LoadedMetaData(e ,totalTime, video)} onCanPlayThrough={(e)=> CanPlayThrough(e)} onTimeUpdate={(e)=> TimeUpdate(e, video, currentTime, currentTimeSpan)} onEnded={(e)=> VideoEnded(playBut, BarTimer)} onClick={(e)=>PlayHandler(e, singleClick, dbClickTimer, playBut, audioCtx, BarTimer, video, dbDelay, videoContainer, progress )}>
             Sorry, your browser doesn&apos;t support embedded videos.
         </video>
         <div id="video-controls" className={css.video_controls} ref={videoControls}>
@@ -221,20 +221,13 @@ export default function Webplayer(){
                     <span className={css.itemText}>Subtitles Settings</span>
                 </div>
                 <div id="subsSettings" className={`${css.subsSettings}`}>
-                    <div id="charEdge" className={`${css.field}`}>
-                        <span>Character Edge</span>
-                        <select className={`${css.input}`} name="charEdge">
-                            <option selected value="none">None</option>
-                            <option value="raised">Raised</option>
-                            <option value="depressed">Depressed</option>
-                            <option value="uniform">Uniform</option>
-                            <option value="drop shahow">Drop Shahow</option>
-                        </select>
+                    <div className={`${css.field}`}>
+                        <button onClick={(e)=>SubsSettingsHandler(e,'reset', video.current)}>reset</button>
                     </div>
                     <div id="fontFamily" className={`${css.field}`}>
                         <span>Font-Family</span>
-                        <select name="fontFamily" className={`${css.input}`}>
-                            <option selected value={'Arial'}>Arial</option>
+                        <select onChange={(e)=>SubsSettingsHandler(e,'fontFamily', video.current)} defaultValue={'Arial'} name="fontFamily" className={`${css.input}`}>
+                            <option value={'Arial'}>Arial</option>
                             <option value={'Verdana'}>Verdana</option>
                             <option value={'Helvetica'}>Helvetica</option>
                             <option value={'Tahoma'}>Tahoma</option>
@@ -248,23 +241,31 @@ export default function Webplayer(){
                     </div>
                     <div id="fontSize" className={`${css.field}`}>
                         <span>Font-Size</span>
-                        <div><input min="0" defaultValue={100} type="number" className={`${css.input}`}></input>%</div>
+                        <div><input onChange={(e)=>SubsSettingsHandler(e,'fontSize', video.current)} min="0" defaultValue={100} type="number" className={`${css.input}`}></input>%</div>
                     </div>
                     <div id="fontColor" className={`${css.field}`}>
                         <span>Font-Color</span>
-                        <input type="color" defaultValue={"#FFFFFF"} className={`${css.input}`}></input>
+                        <input onChange={(e)=>SubsSettingsHandler(e,'fontColor', video.current)} type="color" defaultValue={"#FFFFFF"} className={`${css.input}`}></input>
                     </div>
-                    <div id="opacity" className={`${css.field}`}>
+                    <div id="fontOpacity" className={`${css.field}`}>
                         <span>Font-Opacity</span>
-                        <input min="0" max="1" step={0.05} defaultValue={1} type="number" className={`${css.input}`}></input>
+                        <input onChange={(e)=>SubsSettingsHandler(e,'fontOpacity', video.current)} min="0" max="1" step={0.05} defaultValue={1} type="number" className={`${css.input}`}></input>
                     </div>
                     <div id="backgroundColor" className={`${css.field}`}>
                         <span>Background Color</span>
-                        <input type="color" defaultValue={"#000000"} className={`${css.input}`}></input>
+                        <input onChange={(e)=>SubsSettingsHandler(e,'backColor', video.current)} type="color" defaultValue={"#000000"} className={`${css.input}`}></input>
                     </div>
                     <div id="backgroundOpacity" className={`${css.field}`}>
                         <span>Background Opacity</span>
-                        <input min="0" max="1" step={0.05} defaultValue={1} type="number" className={`${css.input}`}></input>
+                        <input onChange={(e)=>SubsSettingsHandler(e,'backOpacity', video.current)} min="0" max="1" step={0.05} defaultValue={1} type="number" className={`${css.input}`}></input>
+                    </div>
+                    <div id="vertical" className={`${css.field}`}>
+                        <span>Vertical Position</span>
+                        <div><input onChange={(e)=>SubsSettingsHandler(e,'vertical', video.current)} step={1} defaultValue={93} type="number" className={`${css.input}`}></input>%</div>
+                    </div>
+                    <div id="horizontal" className={`${css.field}`}>
+                        <span>Horizontal Position</span>
+                        <div><input onChange={(e)=>SubsSettingsHandler(e,'horizontal', video.current)} step={1} defaultValue={0} type="number" className={`${css.input}`}></input>%</div>
                     </div>
                 </div>
             </div>
@@ -370,6 +371,59 @@ export default function Webplayer(){
         </div>
     </div>
     </>
+}
+function SubsSettingsHandler(e,item,player){
+    switch (item){
+        case 'fontFamily':
+            console.log(item)
+            player.style.setProperty("--fontFamily", e.target.value);
+            break;
+        case 'fontSize':
+            player.style.setProperty("--fontSize", e.target.value + "%");
+            break;
+        case 'fontOpacity':
+            player.style.setProperty("--fontOpacity", e.target.value);
+            break;
+        case 'fontColor':
+            player.style.setProperty("--fontColor", e.target.value);
+            break;
+        case 'backOpacity':
+            player.style.setProperty("--backOpacity", e.target.value);
+            break;
+        case 'backColor':
+            const r = parseInt(e.target.value.substr(1,2), 16)
+            const g = parseInt(e.target.value.substr(3,2), 16)
+            const b = parseInt(e.target.value.substr(5,2), 16)
+            player.style.setProperty("--backColor", `${r},${g},${b}`);
+            break;
+        case 'vertical':
+            player.style.setProperty("--vertical", e.target.value + "%");
+            player.style.setProperty("--position", "relative");
+            break;
+        case 'horizontal':
+            player.style.setProperty("--horizontal", e.target.value + "%");
+            player.style.setProperty("--position", "relative");
+            break;
+        case 'reset':
+            document.querySelector("#fontFamily select").value = 'Arial';
+            document.querySelector("#fontSize input").value = '100';
+            document.querySelector("#fontOpacity input").value = '1';
+            document.querySelector("#fontColor input").value = '#FFFFFF';
+            document.querySelector("#backgroundOpacity input").value = '0';
+            document.querySelector("#backgroundColor input").value = '#000000';
+            document.querySelector("#vertical input").value = '93';
+            document.querySelector("#horizontal input").value = '0';
+            player.style.setProperty("--fontFamily", 'Arial');
+            player.style.setProperty("--fontSize", "100%");
+            player.style.setProperty("--fontOpacity", '1');
+            player.style.setProperty("--fontColor", '#FFFFFF');
+            player.style.setProperty("--backOpacity", '0');
+            player.style.setProperty("--backColor", `0,0,0`);
+            player.style.setProperty("--vertical", "0%");
+            player.style.setProperty("--horizontal", "0%");
+            player.style.setProperty("--position", "absolute");
+            break;
+    }
 }
 
 // Initialization

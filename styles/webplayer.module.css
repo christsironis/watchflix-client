@@ -17,6 +17,27 @@
     object-fit: fill;
     z-index: 1;
     aspect-ratio: var(--ratio,auto); 
+    --fontFamily: Arial;
+    --fontSize: 100%;
+    --fontOpacity: 1;
+    --fontColor: #FFFFFF;
+    --backOpacity: 0;
+    --backColor: 0,0,0;
+    --horizontal: 0%;
+    --vertical: 0%;
+    --position: absolute;
+}
+.videoPlayer::-webkit-media-text-track-display{
+    position: var(--position)!important;
+    top: var(--vertical)!important;
+    left: var(--horizontal)!important;
+}
+.videoPlayer::cue{
+    font-family: var(--fontFamily);
+    font-size: var(--fontSize);
+    color: var(--fontColor);
+    opacity: var(--fontOpacity);
+    background-color: rgba(var(--backColor),var(--backOpacity));
 }
 .video_controls{
     width: 100%;
@@ -156,6 +177,7 @@
     font-size: 1.05rem;
     cursor: pointer;
 }
+
 .bot_bar{
     z-index: 3;
     pointer-events: all;

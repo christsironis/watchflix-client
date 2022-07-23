@@ -161,7 +161,7 @@ async function FindSubs(player,socket,room){
 		item.addEventListener("click",async ()=>{
 			const request = await fetch(`/api/subs?download=${item.getAttribute("data-fileid")}`);
 			const json = await request.json();
-			AddSubTrack(player,json.name,json.link, item.getAttribute("language-iso"));
+			AddSubTrack(player,json.name,json.link, item.getAttribute("language-iso"), true);
 			console.log("sub added from opensubs: ",json);
 			socket.emit("addSub",{ room: room,name: json.name, url: json.link, language: item.getAttribute("language"), langIso: item.getAttribute("language-iso")});
 		});
