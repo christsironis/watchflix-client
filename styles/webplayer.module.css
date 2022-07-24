@@ -191,6 +191,8 @@
 }
 .subtitleBody{
     padding: 10px 20px;
+    max-height: 250px;
+    overflow-y: auto;
 }
 .subtitlesSet:hover{
     text-decoration: underline;
@@ -198,6 +200,10 @@
 }
 .subtitlesName{
     cursor: pointer;
+    white-space: nowrap;
+    overflow-x: hidden;
+    width: 80%;
+    text-overflow: ellipsis;
 }
 .subtitlesX{
     cursor: pointer;

@@ -8,19 +8,17 @@ import { io } from "socket.io-client";
 import WebTorrent from 'webtorrent';
 import Webplayer from '../../components/webplayer';
 
+let socket;
 export default function Room({cookies}){
+	const [textTracks,setTextTracks] = useState({table: {}, current: ''});
 	const router = useRouter();
 	const room = cookies.room;
 	const username = cookies.username;
 	let player;
-	let socket;
-	useEffect(()=>{
+	useEffect(()=>{console.log("1111111111111111111111111111111111111111111111111111111111")
 		socket = io(process.env.NEXT_PUBLIC_SERVER, { transports: ['websocket'] });
 		// const webtorrent = new WebTorrent();
-		document.addEventListener('dragenter', DragEnter, true);
-		document.addEventListener('dragover', DragOver, true);
-		document.addEventListener('dragleave', DragLeave, true);
-		document.addEventListener("drop", Drop ,true);
+
 		player = document.querySelector("video");
 		setInterval(() => {
 			socket.volatile.emit("timedifferencev1",new Date().toISOString().slice(0,-1));
@@ -86,14 +84,14 @@ export default function Room({cookies}){
 			// 	AddPlayer({ name: name, id: id, color: color });
 			// }
 		});
-		socket.on("addSub", ({name,url,language,langIso}) => {
-			AddSubTrack( player, name, url, langIso, true );
+		socket.on("addSub", ({name,url,language,isoLang}) => {
+			AddSubTrack( setTextTracks, name, url, isoLang, language, true );
 		});
 		socket.emit("initialize_room", { room: cookies.room, user: username },({ users, subs}) => {
 			console.log(users,subs);
 			for (const code in subs) {
 				for (const sub in subs[code]) {
-					AddSubTrack( player, subs[code][sub].name, subs[code][sub].url, subs[code][sub].langIso );
+					AddSubTrack( setTextTracks, subs[code][sub].name, subs[code][sub].url, subs[code][sub].isoLang, subs[code][sub].language );
 				}
 			}
 			// console.log(webtorrent)
@@ -112,12 +110,19 @@ export default function Room({cookies}){
 				// AddPlayer({ name: user, id: id, color: color });
 			}
 		});
+		function DropHandler(e){ Drop(e,setTextTracks); }
+		document.addEventListener('dragenter', DragEnter, true);
+		document.addEventListener('dragover', DragOver, true);
+		document.addEventListener('dragleave', DragLeave, true);
+		document.addEventListener("drop", DropHandler,true);
+
 		return ()=>{
 			socket.emit("leave_room", { room: cookies.room, user: username});
 			socket.disconnect();
 			document.removeEventListener('dragenter', DragEnter, true);
 			document.removeEventListener('dragover', DragOver, true);
 			document.removeEventListener('dragleave', DragLeave, true);
+			document.removeEventListener("drop", DropHandler ,true);
 			player.removeEventListener("pause", SendPauseEvent );
 			player.removeEventListener("play", SendPlayEvent );
 		}
@@ -131,15 +136,15 @@ export default function Room({cookies}){
 		<div>{router.asPath} asdlfkj</div>
 		<div id="offset"></div>
 		<video crossOrigin="anonymous" controls width="500px" height="500px" src="/video.mp4 "></video>
-        <Webplayer/>
-		<button id='subsbutton' onClick={()=>FindSubs(player,socket,room)}>Find Subs</button>
+        <Webplayer socket={socket} room={room} subtitles={textTracks} setSubtitles={setTextTracks}/>
+		<button id='subsbutton' onClick={()=>FindSubs(setTextTracks,socket,room)}>Find Subs</button>
 		<div className="subscontainer">
 
 		</div>
 		</>
     );
 }
-async function FindSubs(player,socket,room){
+async function FindSubs(state,socket,room){
 	const subsCont = document.querySelector(".subscontainer");
 	subsCont.classList.toggle("showFlex");
 	if(!subsCont.classList.contains("showFlex")) return;
@@ -161,30 +166,16 @@ async function FindSubs(player,socket,room){
 		item.addEventListener("click",async ()=>{
 			const request = await fetch(`/api/subs?download=${item.getAttribute("data-fileid")}`);
 			const json = await request.json();
-			AddSubTrack(player,json.name,json.link, item.getAttribute("language-iso"), true);
+			AddSubTrack(state, json.name, json.link, item.getAttribute("language-iso"), item.getAttribute("language"), true);
 			console.log("sub added from opensubs: ",json);
-			socket.emit("addSub",{ room: room,name: json.name, url: json.link, language: item.getAttribute("language"), langIso: item.getAttribute("language-iso")});
+			socket.emit("addSub",{ room: room,name: json.name, url: json.link, language: item.getAttribute("language"), isoLang: item.getAttribute("language-iso")});
 		});
 	}
 }
-function AddSubTrack( player, name, url, isoLang = "undefined", makeDefault = false){
-	player = document.querySelector("#videoPlayer");
-	const sameTrack = document.querySelector(`video track[label='${name}'][srclang='${isoLang}']`);
-	const track = sameTrack ? sameTrack : document.createElement("track");
-	track.kind = "subtitles"; 
-	track.label = name;
-	track.srclang = isoLang;
-	track.src = url;
-	player.append(track);
-	if(makeDefault){
-		const items = player.textTracks.length;
-		for (let i = 0; i < items -1; i++) {
-			player.textTracks[i].mode = 'hidden';
-		}
-		player.textTracks[ items - 1 ].mode = 'showing';
-	}
+function AddSubTrack( state, name, url, isoLang = "undefined", language = "undefined", setActive= false){
+	state(previous=> { return { table: {...previous.table, [url]: {name: name, url: url, isoLang: isoLang, language: language}}, current: setActive ? url : previous.current } });
 }
-function DragEnter(e) {
+function DragEnter(e) { 
     e.stopPropagation();
 	if (!e.relatedTarget) {
     	document.querySelector("#dragdropcont")?.classList.add("show");
@@ -200,7 +191,7 @@ function DragLeave(e) {
 		document.querySelector("#dragdropcont")?.classList.remove("show");
 	}
 }
-async function Drop(e) {
+async function Drop(e,setTextTracks) {
 	e.preventDefault();
 	document.querySelector("#dragdropcont")?.classList.remove("show");
 
@@ -213,11 +204,11 @@ async function Drop(e) {
 			player.src = link;
 		}
 		else if (file.name.match('.vtt$') ) {
-			AddSubTrack( player, file.name, URL.createObjectURL(file) );
+			AddSubTrack( setTextTracks, file.name, URL.createObjectURL(file),'NN','NN', true );
 		}
 		else if(file.name.match('.srt$') ){
 			const textTrackUrl = await toWebVTT(file);
-			AddSubTrack( player, file.name, textTrackUrl );
+			AddSubTrack( setTextTracks, file.name, textTrackUrl,'NN','NN', true );
 		}
 		else{
 			alert("Doesn't support file type!");
