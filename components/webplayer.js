@@ -6,6 +6,8 @@ export default function Webplayer(){
     const videoControls = useRef();
     const video = useRef();
     const botBar = useRef();
+    const subtitlesPanel = useRef();
+    const subtitlesBody = useRef();
     const settingsPanel = useRef();
     const speedPanel = useRef();
     const speedValue = useRef();
@@ -88,6 +90,11 @@ export default function Webplayer(){
                 SetVolumeSettings( {clientX : barOffsetLeft + volPin.current.offsetLeft - volumeStep }, vol,volPin,barWidth,halfBarWidth,barOffsetLeft,gain,maxGain,volIndic,AudioGainNode,volBar,indicatorTimeout,showIndicator );        
             }
         }
+        // subtitles
+        function RemoveSub(label,language){
+            document.querySelector(`track[label='${label}'][srclang='${language}']`).remove();
+            document.querySelector(`#subtitlesBody div[data-label='${label}'][data-language='${language}']`).parentElement().remove();
+        }
         return ()=>{
             // video.current.removeEventListener("wheel",VideoWheel, {passive: false});
             document.removeEventListener('fullscreenchange', FullScreenChange);
@@ -101,6 +108,22 @@ export default function Webplayer(){
         </video>
         <div id="video-controls" className={css.video_controls} ref={videoControls}>
             <div id="vol-Indicator" className={css.vol_Indicator} ref={volIndic}>100%</div>
+            <div id="subtitles" className={`${css.panel} ${css.subtitles} panel`} ref={subtitlesPanel}>
+                <div className={`${css.subtitlesHead} ${css.disFlex} head`}>
+                    <svg className={`${css.arrowSVG} ${css.subtitlesX}`}  viewBox="0 0 460.775 460.775">
+                        <path d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55  c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55  c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505  c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55  l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719  c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z"/>
+                    </svg>
+                    <span className={css.subtitlesSet}>Settings</span>
+                </div>
+                <div id='subtitleBody' className={`${css.subtitleBody} `} ref={subtitlesBody}>
+                    <div className={css.subtitlesItem}>
+                        <span className={css.subtitlesName} data-label='off'>off</span>
+                        <svg className={`${css.arrowSVG} ${css.subtitlesX}`} viewBox="0 0 460.775 460.775">
+                            <path d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55  c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55  c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505  c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55  l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719  c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
             <div className={`${css.panel} ${css.settingsPanel} panel`} id="settingsPanel" ref={settingsPanel}>
                 <div id="speed" data-but="speed" className={css.settingsItem} onClick={(e)=>SettingsItemsClick(e,settingsPanel,videoContainer)}>
                     <svg viewBox="0 0 24 24" className={css.itemSVG}>
@@ -114,7 +137,7 @@ export default function Webplayer(){
                         </g>
                     </svg>
                 </div>
-                <div id="subtitles" data-but="subs-settings" className={css.settingsItem} onClick={(e)=>SettingsItemsClick(e,settingsPanel,videoContainer)}>
+                <div id="subs-settings" data-but="subs-settings" className={css.settingsItem} onClick={(e)=>SettingsItemsClick(e,settingsPanel,videoContainer)}>
                     <svg viewBox="0 0 24 24" className={css.itemSVG}>
                         <path d="M6,14v-4c0-0.55,.45-1,1-1h3c0.55,0,1,.45,1,1v1H9.5v-0.5h-2v3h2V13H11v1c0,.55-0.45,1-1,1H7C6.45,15,6,14.55,6,14z            M14,15h3c0.55,0,1-0.45,1-1v-1h-1.5v0.5h-2v-3h2V11H18v-1c0-0.55-0.45-1-1-1h-3c-0.55,0-1,.45-1,1v4C13,14.55,13.45,15,14,15z            M20,4H4v16h16V4 M21,3v18H3V3.01C3,3,3,3,3.01,3H21L21,3z" fill="white"></path>
                     </svg>
@@ -330,7 +353,7 @@ export default function Webplayer(){
                         <span> / </span>
                         <span id="totalTime" ref={totalTime}>0:00</span>
                     </div>
-                    <button className={css.button} id="subs" ref={subs} aria-label="no subs" title="no subs">
+                    <button className={css.button} id="subs" onClick={()=>SubsPanel(video.current,subtitlesPanel.current,subtitlesBody.current)} ref={subs} aria-label="no subs" title="no subs">
                         <svg viewBox="0 0 36 36" fillOpacity={0.5} className={css.svg}>
                             <path d="M11,11 C9.9,11 9,11.9 9,13 L9,23 C9,24.1 9.9,25 11,25 L25,25 C26.1,25 27,24.1 27,23 L27,13 C27,11.9 26.1,11 25,11 L11,11 Z M11,17 L14,17 L14,19 L11,19 L11,17 L11,17 Z M20,23 L11,23 L11,21 L20,21 L20,23 L20,23 Z M25,23 L22,23 L22,21 L25,21 L25,23 L25,23 Z M25,19 L16,19 L16,17 L25,17 L25,19 L25,19 Z" fill="#fff"></path>
                         </svg>
@@ -694,6 +717,24 @@ function SpeedPanelInput(e,videoContainer){
     if( rate < 0.1 || isNaN(rate) ) rate = "0.10";
     e.target.value = rate;
     ChangeSelectedValue(rate,"speed",videoContainer);
+}
+// subtitles
+function SubsPanel(player, panel, body){
+    if(!panel.classList.contains('show')){
+        let content = "";
+        for(let x=0; x< player?.textTracks.length; x++){
+            content += 
+            `
+            <div class='${css.subtitlesItem} ${player?.textTracks[x].mode}'>
+                <span class='${css.subtitlesName}' onclick='SelectSub(${player?.textTracks[x].label},${player?.textTracks[x].language})' data-label='${player?.textTracks[x].label}' data-language='${player?.textTracks[x].language}'>${player?.textTracks[x].language} | ${player?.textTracks[x].label}</span>
+                <svg onclick='RemoveSub(${player?.textTracks[x].label},${player?.textTracks[x].language})' class='${css.arrowSVG} ${css.subtitlesX}' viewBox="0 0 460.775 460.775">
+                    <path d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55  c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55  c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505  c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55  l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719  c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z"/>
+                </svg>
+            </div>`
+        }
+        body.innerHTML = content;
+    }
+    panel.classList.toggle('show');
 }
 
 // RatioPanel

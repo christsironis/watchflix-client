@@ -72,7 +72,6 @@
     pointer-events: none;
     display: none;
 }
-
 .panel{
     position: absolute;
     background: rgba(28,28,28,.9);
@@ -177,7 +176,32 @@
     font-size: 1.05rem;
     cursor: pointer;
 }
-
+.subtitles{
+    width: 500px;
+}
+.subtitlesHead{
+    width: 100%;
+    padding: 0 20px;
+    justify-content: space-between;
+}
+.subtitlesItem{
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+}
+.subtitleBody{
+    padding: 10px 20px;
+}
+.subtitlesSet:hover{
+    text-decoration: underline;
+    cursor: pointer;
+}
+.subtitlesName{
+    cursor: pointer;
+}
+.subtitlesX{
+    cursor: pointer;
+}
 .bot_bar{
     z-index: 3;
     pointer-events: all;
