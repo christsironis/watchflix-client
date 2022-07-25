@@ -46,8 +46,8 @@ export default function Entry({data,torrentHTML,id,film}){
         let episode = null;
         if( film === "serie"){
             const title = document.querySelector(".popup .name").innerHTML;
-            season = parseInt(seasonRegex.exec(title)[0]);
-            episode = parseInt(episRegex.exec(title)[0]);
+            season = parseInt(seasonRegex.exec(title)?.[0]);
+            episode = parseInt(episRegex.exec(title)?.[0]);
         }
         const title = document.querySelector(".wrapper .title h2").innerHTML;
         const url = document.querySelector(".popup .input #link").value;

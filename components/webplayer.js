@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import css from "../styles/webplayer.module.css";
 
-export default function Webplayer({subtitles:{table,current},setSubtitles,socket,room}){
+export default function Webplayer({subtitles:{table: subsTable,current},setSubtitles,socket,room}){
     const videoContainer = useRef();
     const videoControls = useRef();
     const video = useRef();
@@ -47,9 +47,7 @@ export default function Webplayer({subtitles:{table,current},setSubtitles,socket
     let currentTime = useRef(0);
     let hoveredTime = useRef(0);
     useEffect(()=>{
-        console.log(table,current);console.log("22223222222222222222222222222222222222222")
-        const subsTable = Object.keys(table);
-        const length = Object.keys(table).length;
+        console.log(subsTable,current);console.log("22223222222222222222222222222222222222222")
         for( let x=0; x < video.current.textTracks.length; x++){
             if( current == video.current.textTracks[x].id ){
                 video.current.textTracks[x].mode = 'showing'; 
@@ -57,7 +55,7 @@ export default function Webplayer({subtitles:{table,current},setSubtitles,socket
                 video.current.textTracks[x].mode = 'hidden'; 
             }
         }
-    },[table,current]);
+    },[subsTable,current]);
     useEffect(()=>{
         video.current.src="/video.mp4 ";
 
@@ -116,8 +114,8 @@ export default function Webplayer({subtitles:{table,current},setSubtitles,socket
     <div id="videoContainer" className={css.videoContainer} ref={videoContainer} onMouseMove={()=>VideoContainerMouseMove(video,delayCtrlTimeout,videoControls,videoContainer)}>
         <video id="videoPlayer" crossOrigin='anonymous' className={css.videoPlayer} ref={video} onLoadedMetadata={(e)=> LoadedMetaData(e ,totalTime, video)} onCanPlayThrough={(e)=> CanPlayThrough(e)} onTimeUpdate={(e)=> TimeUpdate(e, video, currentTime, currentTimeSpan)} onEnded={(e)=> VideoEnded(playBut, BarTimer,videoControls,videoContainer)} onClick={(e)=>PlayHandler(e, singleClick, dbClickTimer, playBut, audioCtx, BarTimer, video, dbDelay, videoContainer, progress )}>
             Sorry, your browser doesn&apos;t support embedded videos.
-            {Object.keys(table).length >0 && Object.keys(table).map(sub=> 
-                <track key={table[sub].url} kind='subtitles' label={table[sub].name} srcLang={table[sub].isoLang} src={table[sub].url} id={table[sub].url}></track>
+            {Object.keys(subsTable).length >0 && Object.keys(subsTable).map(sub=> 
+                <track key={subsTable[sub].url} kind='subtitles' label={subsTable[sub].name} srcLang={subsTable[sub].isoLang} src={subsTable[sub].url} id={subsTable[sub].url}></track>
             )}
         </video>
         <div id="video-controls" className={css.video_controls} ref={videoControls}>
@@ -130,13 +128,13 @@ export default function Webplayer({subtitles:{table,current},setSubtitles,socket
                     <span className={css.subtitlesSet}>Settings</span>
                 </div>
                 <div id='subtitleBody' className={`${css.subtitleBody} `} ref={subtitlesBody}>
-                    <div className={css.subtitlesItem}>
-                        <span className={css.subtitlesName} data-label='off'>off</span>
+                    <div className={`${css.subtitlesItem} ${ current === 'off' ? css.currentSub: ''}`}>
+                        <span onClick={()=>SelectSub(setSubtitles, 'off')} className={css.subtitlesName} data-label='off'>off</span>
                     </div>
-                    {Object.keys(table).length >0 && Object.keys(table).map(sub=> 
-                        <div key={table[sub].name + table[sub].url} className={`${css.subtitlesItem}`}>
-                            <span className={`${css.subtitlesName}`} data-language={table[sub].isoLang}>{table[sub].isoLang} | {table[sub].name}</span>
-                            <svg onClick={(e)=>RemoveSub( setSubtitles,socket,room, table[sub].name, table[sub].url, table[sub].isoLang )} 
+                    {Object.keys(subsTable).length >0 && Object.keys(subsTable).map(sub=> 
+                        <div key={subsTable[sub].name + subsTable[sub].url} className={`${css.subtitlesItem} ${ current === subsTable[sub].url ? css.currentSub: ''}`}>
+                            <span onClick={()=>SelectSub(setSubtitles, subsTable[sub].url)} className={`${css.subtitlesName}`} data-language={subsTable[sub].isoLang}>{subsTable[sub].isoLang} | {subsTable[sub].name}</span>
+                            <svg onClick={(e)=>RemoveSub( setSubtitles,socket,room, subsTable[sub].name, subsTable[sub].url, subsTable[sub].isoLang )} 
                                 className={`${css.arrowSVG} ${css.subtitlesX}`} viewBox="0 0 460.775 460.775">
                                 <path d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55  c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55  c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505  c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55  l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719  c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z"/>
                             </svg>
@@ -373,8 +371,8 @@ export default function Webplayer({subtitles:{table,current},setSubtitles,socket
                         <span> / </span>
                         <span id="totalTime" ref={totalTime}>0:00</span>
                     </div>
-                    <button className={css.button} id="subs" onClick={()=>SubsPanel(video.current,subtitlesPanel.current,subtitlesBody.current)} ref={subs} aria-label="no subs" title="no subs">
-                        <svg viewBox="0 0 36 36" fillOpacity={0.5} className={css.svg}>
+                    <button className={css.button} id="subs" onClick={()=>SubsPanel(videoContainer,subtitlesPanel)} ref={subs} aria-label="no subs" title="no subs">
+                        <svg viewBox="0 0 36 36" fillOpacity={0.5} className={`${css.svg} ${ current !== 'off' ? css.enabledSVG: ''}`}>
                             <path d="M11,11 C9.9,11 9,11.9 9,13 L9,23 C9,24.1 9.9,25 11,25 L25,25 C26.1,25 27,24.1 27,23 L27,13 C27,11.9 26.1,11 25,11 L11,11 Z M11,17 L14,17 L14,19 L11,19 L11,17 L11,17 Z M20,23 L11,23 L11,21 L20,21 L20,23 L20,23 Z M25,23 L22,23 L22,21 L25,21 L25,23 L25,23 Z M25,19 L16,19 L16,17 L25,17 L25,19 L25,19 Z" fill="#fff"></path>
                         </svg>
                     </button>
@@ -414,68 +412,6 @@ export default function Webplayer({subtitles:{table,current},setSubtitles,socket
         </div>
     </div>
     </>
-}
-function RemoveSub(setSubtitles,socket,room,name,url,isoLang){
-    socket.emit("removeSub",{room: room, name: name, isoLang: isoLang});
-    setSubtitles(previous=>{
-        console.log("previous",previous,"name ",name)
-        delete previous.table[url];
-        if( !Object.keys(previous.table).length ) previous.current = '';
-        return {table: { ...previous.table}, current: previous.current};
-    })
-}
-function SubsSettingsHandler(e,item,player){
-    switch (item){
-        case 'fontFamily':
-            console.log(item)
-            player.style.setProperty("--fontFamily", e.target.value);
-            break;
-        case 'fontSize':
-            player.style.setProperty("--fontSize", e.target.value + "%");
-            break;
-        case 'fontOpacity':
-            player.style.setProperty("--fontOpacity", e.target.value);
-            break;
-        case 'fontColor':
-            player.style.setProperty("--fontColor", e.target.value);
-            break;
-        case 'backOpacity':
-            player.style.setProperty("--backOpacity", e.target.value);
-            break;
-        case 'backColor':
-            const r = parseInt(e.target.value.substr(1,2), 16)
-            const g = parseInt(e.target.value.substr(3,2), 16)
-            const b = parseInt(e.target.value.substr(5,2), 16)
-            player.style.setProperty("--backColor", `${r},${g},${b}`);
-            break;
-        case 'vertical':
-            player.style.setProperty("--vertical", e.target.value + "%");
-            player.style.setProperty("--position", "relative");
-            break;
-        case 'horizontal':
-            player.style.setProperty("--horizontal", e.target.value + "%");
-            player.style.setProperty("--position", "relative");
-            break;
-        case 'reset':
-            document.querySelector("#fontFamily select").value = 'Arial';
-            document.querySelector("#fontSize input").value = '100';
-            document.querySelector("#fontOpacity input").value = '1';
-            document.querySelector("#fontColor input").value = '#FFFFFF';
-            document.querySelector("#backgroundOpacity input").value = '0';
-            document.querySelector("#backgroundColor input").value = '#000000';
-            document.querySelector("#vertical input").value = '93';
-            document.querySelector("#horizontal input").value = '0';
-            player.style.setProperty("--fontFamily", 'Arial');
-            player.style.setProperty("--fontSize", "100%");
-            player.style.setProperty("--fontOpacity", '1');
-            player.style.setProperty("--fontColor", '#FFFFFF');
-            player.style.setProperty("--backOpacity", '0');
-            player.style.setProperty("--backColor", `0,0,0`);
-            player.style.setProperty("--vertical", "0%");
-            player.style.setProperty("--horizontal", "0%");
-            player.style.setProperty("--position", "absolute");
-            break;
-    }
 }
 
 // Initialization
@@ -702,15 +638,15 @@ function PipHandler(pip,video){
 }
 // show - hide controls
 function VideoContainerMouseMove(video,delayCtrlTimeout,videoControls,videoContainer){
-    if(delayCtrlTimeout.current !== undefined){
+    if(delayCtrlTimeout?.current !== undefined){
         videoControls.current.classList.remove("hideControls");
         videoContainer.current.classList.remove("hideCursor");
         clearTimeout(delayCtrlTimeout.current);
     }
     delayCtrlTimeout.current = setTimeout(() => {
-        if( !video.current.paused ){
-            videoControls.current.classList.add("hideControls");
-            videoContainer.current.classList.add("hideCursor");
+        if( !video.current?.paused ){
+            videoControls.current?.classList.add("hideControls");
+            videoContainer.current?.classList.add("hideCursor");
         }
         delayCtrlTimeout.current = undefined;
     }, 2000);  
@@ -750,22 +686,78 @@ function SpeedPanelInput(e,videoContainer){
     ChangeSelectedValue(rate,"speed",videoContainer);
 }
 // subtitles
-function SubsPanel(player, panel, body){
-    // if(!panel.classList.contains('show')){
-    //     let content = "";
-    //     for(let x=0; x< player?.textTracks.length; x++){
-    //         content += 
-    //         `
-    //         <div class='${css.subtitlesItem} ${sub.mode}'>
-    //             <span class='${css.subtitlesName}' onclick='SelectSub(${player?.textTracks[x].label},${player?.textTracks[x].language})' data-label='${player?.textTracks[x].label}' data-language='${player?.textTracks[x].language}'>${player?.textTracks[x].language} | ${player?.textTracks[x].label}</span>
-    //             <svg onclick='RemoveSub(${player?.textTracks[x].label},${player?.textTracks[x].language})' class='${css.arrowSVG} ${css.subtitlesX}' viewBox="0 0 460.775 460.775">
-    //                 <path d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55  c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55  c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505  c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55  l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719  c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z"/>
-    //             </svg>
-    //         </div>`
-    //     }
-    //     body.innerHTML = content;
-    // }
-    panel.classList.toggle('show');
+function SubsPanel(videoContainer, panel){
+    videoContainer.current.querySelectorAll(".panel:not(#subtitles)").forEach(item=>{
+        item.classList.remove("show");
+    });
+    panel.current.classList.toggle('show');
+}
+function SelectSub(setSubtitles,url){
+    setSubtitles(previous=>{
+        console.log("previous",previous,"name ",name)
+        return {table: { ...previous.table}, current: url};
+    })
+}
+function RemoveSub(setSubtitles,socket,room,name,url,isoLang){
+    socket.emit("removeSub",{room: room, name: name, isoLang: isoLang});
+    setSubtitles(previous=>{
+        delete previous.table[url];
+        if( previous.current === url || !Object.keys(previous.table).length ) previous.current = 'off';
+        return {table: { ...previous.table}, current: previous.current};
+    })
+}
+function SubsSettingsHandler(e,item,player){
+    switch (item){
+        case 'fontFamily':
+            console.log(item)
+            player.style.setProperty("--fontFamily", e.target.value);
+            break;
+        case 'fontSize':
+            player.style.setProperty("--fontSize", e.target.value + "%");
+            break;
+        case 'fontOpacity':
+            player.style.setProperty("--fontOpacity", e.target.value);
+            break;
+        case 'fontColor':
+            player.style.setProperty("--fontColor", e.target.value);
+            break;
+        case 'backOpacity':
+            player.style.setProperty("--backOpacity", e.target.value);
+            break;
+        case 'backColor':
+            const r = parseInt(e.target.value.substr(1,2), 16)
+            const g = parseInt(e.target.value.substr(3,2), 16)
+            const b = parseInt(e.target.value.substr(5,2), 16)
+            player.style.setProperty("--backColor", `${r},${g},${b}`);
+            break;
+        case 'vertical':
+            player.style.setProperty("--vertical", e.target.value + "%");
+            player.style.setProperty("--position", "relative");
+            break;
+        case 'horizontal':
+            player.style.setProperty("--horizontal", e.target.value + "%");
+            player.style.setProperty("--position", "relative");
+            break;
+        case 'reset':
+            document.querySelector("#fontFamily select").value = 'Arial';
+            document.querySelector("#fontSize input").value = '100';
+            document.querySelector("#fontOpacity input").value = '1';
+            document.querySelector("#fontColor input").value = '#FFFFFF';
+            document.querySelector("#backgroundOpacity input").value = '0';
+            document.querySelector("#backgroundColor input").value = '#000000';
+            document.querySelector("#vertical input").value = '93';
+            document.querySelector("#horizontal input").value = '0';
+            player.style.setProperty("--fontFamily", 'Arial');
+            player.style.setProperty("--fontSize", "100%");
+            player.style.setProperty("--fontOpacity", '1');
+            player.style.setProperty("--fontColor", '#FFFFFF');
+            player.style.setProperty("--backOpacity", '0');
+            player.style.setProperty("--backColor", `0,0,0`);
+            player.style.setProperty("--vertical", "0%");
+            player.style.setProperty("--horizontal", "0%");
+            player.style.setProperty("--position", "absolute");
+            break;
+    }
 }
 
 // RatioPanel

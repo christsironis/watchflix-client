@@ -10,7 +10,7 @@ import Webplayer from '../../components/webplayer';
 
 let socket;
 export default function Room({cookies}){
-	const [textTracks,setTextTracks] = useState({table: {}, current: ''});
+	const [textTracks,setTextTracks] = useState({table: {}, current: 'off'});
 	const router = useRouter();
 	const room = cookies.room;
 	const username = cookies.username;

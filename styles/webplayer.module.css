@@ -187,10 +187,10 @@
 .subtitlesItem{
     display: flex;
     justify-content: space-between;
-    padding: 5px 0;
+    padding: 5px 10px;
 }
 .subtitleBody{
-    padding: 10px 20px;
+    padding: 10px 10px;
     max-height: 250px;
     overflow-y: auto;
 }
@@ -204,6 +204,13 @@
     overflow-x: hidden;
     width: 80%;
     text-overflow: ellipsis;
+}
+.currentSub{
+    background-color: var(--color2);
+    border-radius: 16px;
+}
+.enabledSVG{
+    fill-opacity: 1;
 }
 .subtitlesX{
     cursor: pointer;
