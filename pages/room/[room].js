@@ -9,12 +9,12 @@ import WebTorrent from 'webtorrent';
 import Webplayer from '../../components/webplayer';
 
 let socket;
+let player;
 export default function Room({cookies}){
 	const [textTracks,setTextTracks] = useState({table: {}, current: 'off'});
 	const router = useRouter();
 	const room = cookies.room;
 	const username = cookies.username;
-	let player;
 	useEffect(()=>{console.log("1111111111111111111111111111111111111111111111111111111111")
 		socket = io(process.env.NEXT_PUBLIC_SERVER, { transports: ['websocket'] });
 		// const webtorrent = new WebTorrent();
@@ -194,26 +194,25 @@ function DragLeave(e) {
 async function Drop(e,setTextTracks) {
 	e.preventDefault();
 	document.querySelector("#dragdropcont")?.classList.remove("show");
-
 	if (e.dataTransfer.items) {
-	  for (let i = 0; i < e.dataTransfer.items.length; i++) {
-		  const file = e.dataTransfer.items[i].getAsFile();
-		  console.log('... file[' + i + '].name = ' + file.name + " "+ e.dataTransfer.items.type);
-		if (file.type.match('^video/') ) {
-			const link = URL.createObjectURL(file);
-			player.src = link;
-		}
-		else if (file.name.match('.vtt$') ) {
-			AddSubTrack( setTextTracks, file.name, URL.createObjectURL(file),'NN','NN', true );
-		}
-		else if(file.name.match('.srt$') ){
-			const textTrackUrl = await toWebVTT(file);
-			AddSubTrack( setTextTracks, file.name, textTrackUrl,'NN','NN', true );
-		}
-		else{
-			alert("Doesn't support file type!");
-		}
-	  }
+		for (let i = 0; i < e.dataTransfer.items.length; i++) {
+			const file = e.dataTransfer.items[i].getAsFile();
+		  	console.log('... file[' + i + '].name = ' + file.name + " "+ e.dataTransfer.items.type);
+			if (file.type.match('^video/') && !file.name.match('.mkv$')) {
+				const link = URL.createObjectURL(file);
+				player.src = link;
+			}
+			else if (file.name.match('.vtt$') ) {
+				AddSubTrack( setTextTracks, file.name, URL.createObjectURL(file),'NN','NN', true );
+			}
+			else if(file.name.match('.srt$') ){
+				const textTrackUrl = await toWebVTT(file);
+				AddSubTrack( setTextTracks, file.name, textTrackUrl,'NN','NN', true );
+			}
+			else{
+				alert("Doesn't support file type!");
+			}
+	  	}
 	}
 }
 

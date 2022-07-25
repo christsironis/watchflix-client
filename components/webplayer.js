@@ -8,6 +8,7 @@ export default function Webplayer({subtitles:{table: subsTable,current},setSubti
     const botBar = useRef();
     const subtitlesPanel = useRef();
     const subtitlesBody = useRef();
+    const subsSetPanel = useRef();
     const settingsPanel = useRef();
     const speedPanel = useRef();
     const speedValue = useRef();
@@ -122,10 +123,10 @@ export default function Webplayer({subtitles:{table: subsTable,current},setSubti
             <div id="vol-Indicator" className={css.vol_Indicator} ref={volIndic}>100%</div>
             <div id="subtitles" className={`${css.panel} ${css.subtitles} panel`} ref={subtitlesPanel}>
                 <div className={`${css.subtitlesHead} ${css.disFlex} head`}>
-                    <svg className={`${css.arrowSVG} ${css.subtitlesX}`}  viewBox="0 0 460.775 460.775">
+                    <svg onClick={()=> subtitlesPanel.current.classList.toggle('show') } className={`${css.arrowSVG} ${css.subtitlesX}`}  viewBox="0 0 460.775 460.775">
                         <path d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55  c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55  c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505  c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55  l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719  c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z"/>
                     </svg>
-                    <span className={css.subtitlesSet}>Settings</span>
+                    <span onClick={()=> { subtitlesPanel.current.classList.toggle('show'); subsSetPanel.current.classList.add('show');}} className={css.subtitlesSet}>Settings</span>
                 </div>
                 <div id='subtitleBody' className={`${css.subtitleBody} `} ref={subtitlesBody}>
                     <div className={`${css.subtitlesItem} ${ current === 'off' ? css.currentSub: ''}`}>
@@ -252,7 +253,7 @@ export default function Webplayer({subtitles:{table: subsTable,current},setSubti
                     </div>
                 </div>
             </div>
-            <div className={`${css.panel} panel`} id="subsSetPanel" data-panel="subs-settings">
+            <div className={`${css.panel} panel`} ref={subsSetPanel} id="subsSetPanel" data-panel="subs-settings">
                 <div className={`${css.head} ${css.disFlex} head`} onClick={(e)=>VideoCtrlPanelsHead(e,settingsPanel)}>
                     <svg viewBox="0 0 300.000000 300" className={css.arrowSVG}>
                         <g transform="translate(0.000000,300.000000) scale(0.100000,-0.100000)">
@@ -371,7 +372,7 @@ export default function Webplayer({subtitles:{table: subsTable,current},setSubti
                         <span> / </span>
                         <span id="totalTime" ref={totalTime}>0:00</span>
                     </div>
-                    <button className={css.button} id="subs" onClick={()=>SubsPanel(videoContainer,subtitlesPanel)} ref={subs} aria-label="no subs" title="no subs">
+                    <button className={css.button} id="subs" onClick={()=>SubsPanel(videoContainer,subtitlesPanel)} ref={subs} title={`${ current !== 'off' ? subsTable[current].isoLang : "no subs"}`}>
                         <svg viewBox="0 0 36 36" fillOpacity={0.5} className={`${css.svg} ${ current !== 'off' ? css.enabledSVG: ''}`}>
                             <path d="M11,11 C9.9,11 9,11.9 9,13 L9,23 C9,24.1 9.9,25 11,25 L25,25 C26.1,25 27,24.1 27,23 L27,13 C27,11.9 26.1,11 25,11 L11,11 Z M11,17 L14,17 L14,19 L11,19 L11,17 L11,17 Z M20,23 L11,23 L11,21 L20,21 L20,23 L20,23 Z M25,23 L22,23 L22,21 L25,21 L25,23 L25,23 Z M25,19 L16,19 L16,17 L25,17 L25,19 L25,19 Z" fill="#fff"></path>
                         </svg>
