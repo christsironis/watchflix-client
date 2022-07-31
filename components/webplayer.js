@@ -299,11 +299,11 @@ export default function Webplayer({subtitles:{table: subsTable,current},setSubti
                     </div>
                     <div id="backgroundOpacity" className={`${css.field}`}>
                         <span>Background Opacity</span>
-                        <input onChange={(e)=>SubsSettingsHandler(e,'backOpacity', video.current)} min="0" max="1" step={0.05} defaultValue={1} type="number" className={`${css.input}`}></input>
+                        <input onChange={(e)=>SubsSettingsHandler(e,'backOpacity', video.current)} min="0" max="1" step={0.05} defaultValue={0} type="number" className={`${css.input}`}></input>
                     </div>
                     <div id="vertical" className={`${css.field}`}>
                         <span>Vertical Position</span>
-                        <div><input onChange={(e)=>SubsSettingsHandler(e,'vertical', video.current)} step={1} defaultValue={93} type="number" className={`${css.input}`}></input>%</div>
+                        <div><input onChange={(e)=>SubsSettingsHandler(e,'vertical', video.current)} step={1} defaultValue={0} type="number" className={`${css.input}`}></input>%</div>
                     </div>
                     <div id="horizontal" className={`${css.field}`}>
                         <span>Horizontal Position</span>
