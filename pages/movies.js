@@ -27,7 +27,7 @@ export default function Movies({ json }) {
 				return <Item key={item[0]} id={item[0]} title={item[1]} film={"movie"}/>;
 			})}
 		</div>
-		<div className="lds-ripple loading hide">
+		<div className="lds_ripple loading hide">
 			<div></div>
 			<div></div>
 		</div>

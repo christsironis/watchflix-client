@@ -48,7 +48,6 @@ export default function Webplayer({subtitles:{table: subsTable,current},setSubti
     let currentTime = useRef(0);
     let hoveredTime = useRef(0);
     useEffect(()=>{
-        console.log(subsTable,current);console.log("22223222222222222222222222222222222222222")
         for( let x=0; x < video.current.textTracks.length; x++){
             if( current == video.current.textTracks[x].id ){
                 video.current.textTracks[x].mode = 'showing'; 
@@ -680,7 +679,6 @@ function SpeedRangeArrows(e,speedValue,video){
     ChangeSelectedValue(rate,"speed",videoContainer);
 }
 function SpeedPanelInput(e,videoContainer){
-    console.log(22222222)
     let rate = parseFloat(e.target.value.replace(/[^0-9.]/g,'')).toFixed(2);
     if( rate < 0.1 || isNaN(rate) ) rate = "0.10";
     e.target.value = rate;
@@ -746,7 +744,7 @@ function SubsSettingsHandler(e,item,player){
             document.querySelector("#fontColor input").value = '#FFFFFF';
             document.querySelector("#backgroundOpacity input").value = '0';
             document.querySelector("#backgroundColor input").value = '#000000';
-            document.querySelector("#vertical input").value = '93';
+            document.querySelector("#vertical input").value = '87';
             document.querySelector("#horizontal input").value = '0';
             player.style.setProperty("--fontFamily", 'Arial');
             player.style.setProperty("--fontSize", "100%");
@@ -754,7 +752,7 @@ function SubsSettingsHandler(e,item,player){
             player.style.setProperty("--fontColor", '#FFFFFF');
             player.style.setProperty("--backOpacity", '0');
             player.style.setProperty("--backColor", `0,0,0`);
-            player.style.setProperty("--vertical", "0%");
+            player.style.setProperty("--vertical", "87%");
             player.style.setProperty("--horizontal", "0%");
             player.style.setProperty("--position", "absolute");
             break;

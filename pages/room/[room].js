@@ -15,7 +15,7 @@ export default function Room({cookies}){
 	const router = useRouter();
 	const room = cookies.room;
 	const username = cookies.username;
-	useEffect(()=>{console.log("1111111111111111111111111111111111111111111111111111111111")
+	useEffect(()=>{
 		socket = io(process.env.NEXT_PUBLIC_SERVER, { transports: ['websocket'] });
 		// const webtorrent = new WebTorrent();
 
@@ -132,8 +132,8 @@ export default function Room({cookies}){
 		<div id="dragdropcont" className=''>
 			<div id="dragdrop">Drop it here...</div>
 		</div>
+		<div>Room: {room}</div>
 		<div id="ping"></div>
-		<div>{router.asPath} asdlfkj</div>
 		<div id="offset"></div>
 		<video crossOrigin="anonymous" controls width="500px" height="500px" src="/video.mp4 "></video>
         <Webplayer socket={socket} room={room} subtitles={textTracks} setSubtitles={setTextTracks}/>
@@ -167,7 +167,7 @@ async function FindSubs(state,socket,room){
 			const request = await fetch(`/api/subs?download=${item.getAttribute("data-fileid")}`);
 			const json = await request.json();
 			AddSubTrack(state, json.name, json.link, item.getAttribute("language-iso"), item.getAttribute("language"), true);
-			console.log("sub added from opensubs: ",json);
+			// console.log("sub added from opensubs: ",json);
 			socket.emit("addSub",{ room: room,name: json.name, url: json.link, language: item.getAttribute("language"), isoLang: item.getAttribute("language-iso")});
 		});
 	}
