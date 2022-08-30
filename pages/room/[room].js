@@ -15,17 +15,18 @@ export default function Room({cookies}){
 	const router = useRouter();
 	const room = cookies.room;
 	const username = cookies.username;
+	const uploadSubRef = useRef();
 	useEffect(()=>{
 		socket = io(process.env.NEXT_PUBLIC_SERVER, { transports: ['websocket'] });
 		// const webtorrent = new WebTorrent();
 
 		player = document.querySelector("video");
-		setInterval(() => {
-			socket.volatile.emit("timedifferencev1",new Date().toISOString().slice(0,-1));
-		}, 5000);
-		setInterval(() => {
-			socket.volatile.emit("timedifferencev2",Date.now());
-		}, 5000);
+		// setInterval(() => {
+		// 	socket.volatile.emit("timedifferencev1",new Date().toISOString().slice(0,-1));
+		// }, 5000);
+		// setInterval(() => {
+		// 	socket.volatile.emit("timedifferencev2",Date.now());
+		// }, 5000);
 
 		setInterval(() => {
 			const start =Date.now();
@@ -138,9 +139,28 @@ export default function Room({cookies}){
 		<video crossOrigin="anonymous" controls width="500px" height="500px" src="/video.mp4 "></video>
         <Webplayer socket={socket} room={room} subtitles={textTracks} setSubtitles={setTextTracks}/>
 		<button id='subsbutton' onClick={()=>FindSubs(setTextTracks,socket,room)}>Find Subs</button>
-		<div className="subscontainer">
+		<input ref={uploadSubRef} type="file" accept=".vtt,.srt" id='uploadSub' onInput={
+			async () => { 
+				if(uploadSubRef.current.files.length === 0) return;
 
-		</div>
+				let file = uploadSubRef.current.files[0];
+console.log(file);
+				if (file.name.match('.vtt$') ) {
+					AddSubTrack( setTextTracks, file.name, URL.createObjectURL(file),'NN','NN', true );
+				}
+				else if(file.name.match('.srt$') ){
+					file = await toWebVTT(file);
+					AddSubTrack( setTextTracks, file.name, file,'NN','NN', true );
+				}
+
+				let formdata = new FormData();
+				formdata.append("sub", file );
+
+				fetch(	process.env.NEXT_PUBLIC_SERVER+"/socket/upload", { method: 'POST', body: formdata }
+				).then((response) => response.json()).then(res=>alert(res));
+
+			  }} />
+		<div className="subscontainer">	</div>
 		</>
     );
 }
