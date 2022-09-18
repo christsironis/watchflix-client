@@ -139,25 +139,26 @@ export default function Room({cookies}){
 		<video crossOrigin="anonymous" controls width="500px" height="500px" src="/video.mp4 "></video>
         <Webplayer socket={socket} room={room} subtitles={textTracks} setSubtitles={setTextTracks}/>
 		<button id='subsbutton' onClick={()=>FindSubs(setTextTracks,socket,room)}>Find Subs</button>
-		<input ref={uploadSubRef} type="file" accept=".vtt,.srt" id='uploadSub' onInput={
+		<input ref={uploadSubRef} type="file"  id='uploadSub' onInput={
 			async () => { 
 				if(uploadSubRef.current.files.length === 0) return;
 
 				let file = uploadSubRef.current.files[0];
-console.log(file);
 				if (file.name.match('.vtt$') ) {
 					AddSubTrack( setTextTracks, file.name, URL.createObjectURL(file),'NN','NN', true );
 				}
 				else if(file.name.match('.srt$') ){
 					file = await toWebVTT(file);
-					AddSubTrack( setTextTracks, file.name, file,'NN','NN', true );
+					AddSubTrack( setTextTracks,  uploadSubRef.current.files[0].name.replace('.srt','.webvtt'), file,'NN','NN', true );
 				}
 
 				let formdata = new FormData();
-				formdata.append("sub", file );
+				formdata.append(room, uploadSubRef.current.files[0], uploadSubRef.current.files[0].name.replace('.srt','.webvtt') );
 
-				fetch(	process.env.NEXT_PUBLIC_SERVER+"/socket/upload", { method: 'POST', body: formdata }
-				).then((response) => response.json()).then(res=>alert(res));
+				fetch( process.env.NEXT_PUBLIC_SERVER+"/api/upload", { 
+					method: 'POST', 
+					body: formdata } ).
+				then((response) => response.json()).then(res=>console.log(res));
 
 			  }} />
 		<div className="subscontainer">	</div>
@@ -222,12 +223,12 @@ async function Drop(e,setTextTracks) {
 				const link = URL.createObjectURL(file);
 				player.src = link;
 			}
-			else if (file.name.match('.vtt$') ) {
+			else if (file.name.match('.webvtt$') ) {
 				AddSubTrack( setTextTracks, file.name, URL.createObjectURL(file),'NN','NN', true );
 			}
 			else if(file.name.match('.srt$') ){
 				const textTrackUrl = await toWebVTT(file);
-				AddSubTrack( setTextTracks, file.name, textTrackUrl,'NN','NN', true );
+				AddSubTrack( setTextTracks, file.name.replace('.srt','.webvtt'), textTrackUrl,'NN','NN', true );
 			}
 			else{
 				alert("Doesn't support file type!");
@@ -250,7 +251,7 @@ export async function getServerSideProps({req, params, res}) {
 			},
 		};
 	}
-	const roomExists = await fetch(process.env.NEXT_PUBLIC_SERVER+"/socket/roomExists",{
+	const roomExists = await fetch(process.env.NEXT_PUBLIC_SERVER+"/api/roomExists",{
 		method:'POST',
 		headers: {
 			'Content-Type': 'application/json'
