@@ -51,6 +51,45 @@
     opacity: var(--fontOpacity);
     background-color: rgba(var(--backColor),var(--backOpacity));
 }
+.top_bar{
+    border: 1px solid yellow;
+    width: 100%;
+    height: 50px;
+    top: 0;
+}
+.messagesCont{
+    display: flex;
+    border: 1px solid green;
+    position: absolute;
+    right: 0px;
+    gap: 15px;
+    width: 50%;
+    height: 80%;
+    top: 50px;
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 10px;
+}
+.message{
+    /* right: -500px; */
+    /* transition: all 1s ease-in-out; */
+    /* transform: translateX(500px); */
+    animation-delay: 0s, 10s;
+    animation-duration: 1s, 1s;
+    animation-name: enter, leave;
+    animation-fill-mode: forwards, forwards;
+    animation-timing-function: ease, ease;
+}
+.message.withBackground{
+    display: flex;
+    flex-direction: column;
+    background: red;
+    padding: 10px 20px;
+    border-radius: 16px;
+}
+.withBackground .sender{
+    font-size: 1rem;
+}
 .video_controls{
     width: 100%;
     height: 100%;
@@ -83,6 +122,39 @@
     background-color: hsl(0deg 0% 25% / 50%);
     pointer-events: none;
     display: none;
+}
+.chatButCont{
+    display: flex;
+    align-content: center;
+    align-items: center;
+    height: 100%;
+    transition: all .2s ease-in-out;
+}
+.chatBut{
+    height: 100%;
+    padding: 0;
+    background: unset;
+    line-height: 0;
+    cursor: pointer;
+    transition: transform .2s ease-in-out;
+    border: 0;
+}
+.chatBut path{
+    transition: all 1s ease-in-out;
+    fill:white;
+}
+.chatInput{
+    transition: all 1s ease-in-out;
+    height: 60%;
+    width: 0px;
+    border-radius: 16px;
+    border-width: 0;
+    padding: 0;
+    margin: 0;
+    user-select: none;
+}
+.chatBut:hover{
+    transform: scale(1.2);
 }
 .panel{
     position: absolute;
@@ -248,7 +320,7 @@
     align-items: center;
 }
 .button{
-    background: transparent;
+    background: unset;
     border: none;
     padding: 0%;
     margin: 4px;
@@ -412,3 +484,28 @@
     bottom: 0%;
     left: 0%;
 }
+
+@keyframes enter{
+    from {
+        /* right: -100%; */
+        opacity: 0;
+        transform: translateX(100%) scale(0);
+    }
+    to {
+        /* right: 0%; */
+        opacity: 1;
+        transform: translateX(0%) scale(1);
+    }
+  }
+  @keyframes leave{
+    from {
+        right: 0%; 
+        opacity: 1;
+        transform: translateX(0%) scale(1);
+    }
+    to {
+        right: -100%; 
+        opacity: 0;
+        transform: translateX(100%) scale(0);
+    }
+  }

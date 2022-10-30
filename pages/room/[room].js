@@ -9,14 +9,15 @@ import { io } from "socket.io-client";
 import WebTorrent from 'webtorrent';
 import Webplayer from '../../components/webplayer';
 
-let socket;
-let player;
 export default function Room({cookies}){
 	const [textTracks,setTextTracks] = useState({table: {}, current: 'off'});
+	const [messages,setmessages] = useState([]);
 	const router = useRouter();
 	const room = cookies.room;
 	const username = cookies.username;
-	const uploadSubRef = useRef();
+	let socket;
+	let player;
+
 	useEffect(()=>{
 		socket = io(process.env.NEXT_PUBLIC_SERVER, { transports: ['websocket'] });
 		// const webtorrent = new WebTorrent();
@@ -31,7 +32,10 @@ export default function Room({cookies}){
 
 		setInterval(() => {
 			const start =Date.now();
-
+			// setmessages((previous)=>{
+			// return [...previous,{sender:'egw',text:222}];
+			// })
+			console.log(1111111);
 			// socket.volatile.emit("ping", room ,(serverTime, dateEmited) => {
 			// 	const totalDelay = Date.now() - start;
 			// 	const serverDelay = Date.now() - dateEmited;
@@ -85,6 +89,9 @@ export default function Room({cookies}){
 			// } else {
 			// 	AddPlayer({ name: name, id: id, color: color });
 			// }
+		});
+		socket.on("newMessage", ({sender,text}) => {
+			messages.push({sender,text});
 		});
 		socket.on("addSub", ({name,url,language,isoLang}) => {
 			AddSubTrack( name, url, isoLang, language, true );
@@ -227,7 +234,7 @@ export default function Room({cookies}){
 		<div id="ping"></div>
 		<div id="offset"></div>
 		<video crossOrigin="anonymous" controls width="500px" height="500px" src="/video.mp4 "></video>
-        <Webplayer socket={socket} room={room} subtitles={textTracks} setSubtitles={setTextTracks}/>
+        <Webplayer socket={socket} room={room} messages={messages} subtitles={textTracks} setSubtitles={setTextTracks}/>
 		<button id='subsbutton' onClick={()=>FindSubs()}>Find Subs</button>
 		<div className="subscontainer">	</div>
 		</>

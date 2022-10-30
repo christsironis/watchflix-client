@@ -61,3 +61,12 @@ div.show{
 .hideCursor{
     cursor: none;
 }
+.chatInput.show{
+    width: 300px;
+    padding: 2px 10px;
+    user-select: all;
+    border-width: 1px;
+}
+.chatBut.sendBut path.chatArrow{
+    d: path("M584 669 c-3 -6 19 -37 52 -70 l58 -59 -215 -2 c-182 -3 -214 -5 -214 -18 0 -13 32 -15 214 -18 l215 -2 -59 -60 c-47 -47 -57 -62 -47 -72 10 -10 30 5 95 70 l82 82 -80 80 c-44 44 -83 80 -87 80 -4 0 -10 -5 -14 -11z");
+}
