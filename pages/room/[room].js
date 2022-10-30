@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Head from 'next/head';
 import Script from 'next/script';
 import toWebVTT from "srt-webvtt";
 import { useRouter } from 'next/router';
@@ -215,6 +216,10 @@ export default function Room({cookies}){
 
     return (
         <>
+		<Head>
+			<title>{cookies.room}</title>
+			<meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests"/> 
+		</Head>
 		<div id="dragdropcont" className=''>
 			<div id="dragdrop">Drop it here...</div>
 		</div>
