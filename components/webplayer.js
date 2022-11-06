@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import css from "../styles/webplayer.module.css";
 
-export default function VideoPlayer({subtitles:{table: subsTable,current},setSubtitles,messages,socket,room}){
+export default function VideoPlayer({subtitles:{subsTable,current},setSubtitles,messages,socket,room,user}){
     const videoContainer = useRef();
     const videoWrapper = useRef();
     const videoControls = useRef();
@@ -12,6 +12,7 @@ export default function VideoPlayer({subtitles:{table: subsTable,current},setSub
     const subtitlesPanel = useRef();
     const subtitlesBody = useRef();
     const subsSetPanel = useRef();
+    const chatSetPanel = useRef();
     const settingsPanel = useRef();
     const speedPanel = useRef();
     const speedValue = useRef();
@@ -424,7 +425,7 @@ export default function VideoPlayer({subtitles:{table: subsTable,current},setSub
         })
     }
     function RemoveSub(name,url,isoLang){
-        socket.emit("removeSub",{room: room, name: name, isoLang: isoLang});
+        socket.current.emit("removeSub",{room: room, name: name, isoLang: isoLang});
         setSubtitles(previous=>{
             delete previous.table[url];
             if( previous.current === url || !Object.keys(previous.table).length ) previous.current = 'off';
@@ -522,6 +523,11 @@ export default function VideoPlayer({subtitles:{table: subsTable,current},setSub
         chatInput.current.classList.toggle('show');
         chatBut.current.classList.toggle('sendBut');
     }
+    function SendMessage(e){
+        if(e.key !== "Enter") return;
+        socket.current.emit("newMessage",{room: room, user: user, text: chatInput.current.value });
+        chatInput.current.value = '';
+    }
     //#endregion
 
     return <>
@@ -596,6 +602,21 @@ export default function VideoPlayer({subtitles:{table: subsTable,current},setSub
                     </svg>
                     <span className={css.itemText}>Aspect Ratio</span>
                     <span className={`${css.itemChoice} itemChoice`}>Default</span> 
+                    <svg viewBox="0 0 300.000000 300.000000" className={css.arrowSVG}>
+                        <g transform="translate(0.000000,300.000000) scale(0.100000,-0.100000)" fill="#ffffff" stroke="none">
+                            <path d="M775 2981 c-48 -22 -87 -60 -109 -105 -21 -44 -20 -128 1 -174 10 -24 230 -252 597 -620 l581 -582 -581 -583 c-367 -367 -587 -595 -597 -619 -21 -46 -22 -130 -1 -174 34 -71 114 -124 189 -124 89 0 95 6 778 688 357 356 663 667 680 692 29 41 32 52 32 120 0 68 -3 79 -32 120 -17 25 -323 336 -680 692 -496 495 -659 652 -693 667 -56 25 -113 26 -165 2z"/>
+                        </g>
+                    </svg>
+                </div>
+                <div id="chat" data-but="chat-settings" className={css.settingsItem} onClick={(e)=>SettingsItemsClick(e)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" version="1.0" className={css.itemSVG} viewBox="0 0 100.000000 100.000000" preserveAspectRatio="xMidYMid meet">
+                                <g transform="translate(0.000000,100.000000) scale(0.100000,-0.100000)">
+                                <path d="M376 904 c-130 -32 -250 -127 -304 -241 -23 -49 -27 -72 -27 -143 0 -71 4 -94 27 -143 77 -164 264 -267 461 -254 75 5 79 4 128 -29 27 -18 67 -38 87 -44 39 -10 102 -14 102 -5 0 3 -11 22 -24 43 -13 20 -29 54 -36 75 l-12 37 56 51 c37 33 67 73 88 117 29 59 33 76 33 152 0 71 -4 94 -27 143 -90 192 -327 296 -552 241z m237 -39 c129 -33 227 -109 275 -213 38 -80 38 -184 1 -262 -23 -50 -94 -130 -133 -152 -20 -11 -20 -35 0 -94 8 -25 13 -48 10 -52 -10 -9 -83 29 -110 57 -25 26 -28 27 -91 17 -134 -20 -291 29 -380 119 -135 134 -135 335 -2 469 106 105 280 150 430 111z"/>
+                                {/* <path className='chatArrow' d="M315 600 l-80 -80 82 -82 c65 -65 85 -80 95 -70 10 10 0 25 -47 72 l-59 60 215 2 c182 3 214 5 214 18 0 13 -32 15 -214 18 l-215 2 58 59 c50 51 64 81 38 81 -4 0 -43 -36 -87 -80z"/> */}
+                                </g>
+                            </svg>
+                    <span className={css.itemText}>Chat</span>
+                    <span className={`${css.itemChoice} itemChoice`}>Settings</span> 
                     <svg viewBox="0 0 300.000000 300.000000" className={css.arrowSVG}>
                         <g transform="translate(0.000000,300.000000) scale(0.100000,-0.100000)" fill="#ffffff" stroke="none">
                             <path d="M775 2981 c-48 -22 -87 -60 -109 -105 -21 -44 -20 -128 1 -174 10 -24 230 -252 597 -620 l581 -582 -581 -583 c-367 -367 -587 -595 -597 -619 -21 -46 -22 -130 -1 -174 34 -71 114 -124 189 -124 89 0 95 6 778 688 357 356 663 667 680 692 29 41 32 52 32 120 0 68 -3 79 -32 120 -17 25 -323 336 -680 692 -496 495 -659 652 -693 667 -56 25 -113 26 -165 2z"/>
@@ -677,7 +698,7 @@ export default function VideoPlayer({subtitles:{table: subsTable,current},setSub
                     </svg>
                     <span className={css.itemText}>Subtitles Settings</span>
                 </div>
-                <div id="subsSettings" className={`${css.subsSettings}`}>
+                <div id="subsSettings" className={`${css.optionSettings}`}>
                     <div className={`${css.field}`}>
                         <button onClick={(e)=>SubsSettingsHandler(e,'reset')}>reset</button>
                     </div>
@@ -726,6 +747,64 @@ export default function VideoPlayer({subtitles:{table: subsTable,current},setSub
                     </div>
                 </div>
             </div>
+            <div className={`${css.panel} panel`} ref={chatSetPanel} id="chatSetPanel" data-panel="chat-settings">
+                <div className={`${css.head} ${css.disFlex} head`} onClick={(e)=>VideoCtrlPanelsHead(e)}>
+                    <svg viewBox="0 0 300.000000 300" className={css.arrowSVG}>
+                        <g transform="translate(0.000000,300.000000) scale(0.100000,-0.100000)">
+                        <path d="M2054 2975 c-66 -33 -1365 -1331 -1389 -1387 -19 -48 -19 -128 0 -176 24 -56 1323 -1354 1389 -1387 64 -32 118 -32 183 0 69 35 106 88 111 165 8 111 32 82 -606 723 l-586 587 586 588 c638 640 614 611 606 722 -5 77 -42 130 -111 165 -65 32 -119 32 -183 0z"/>
+                        </g>
+                    </svg>
+                    <span className={css.itemText}>Subtitles Settings</span>
+                </div>
+                <div id="chatSettings" className={`${css.optionSettings}`}>
+                    <div className={`${css.field}`}>
+                        <button onClick={(e)=>SubsSettingsHandler(e,'reset')}>reset</button>
+                    </div>
+                    <div id="chat_fontFamily" className={`${css.field}`}>
+                        <span>Font-Family</span>
+                        <select onChange={(e)=>SubsSettingsHandler(e,'fontFamily')} defaultValue={'Arial'} name="fontFamily" className={`${css.input}`}>
+                            <option value={'Arial'}>Arial</option>
+                            <option value={'Verdana'}>Verdana</option>
+                            <option value={'Helvetica'}>Helvetica</option>
+                            <option value={'Tahoma'}>Tahoma</option>
+                            <option value={'Trebuchet MS'}>Trebuchet MS</option>
+                            <option value={'Times New Roman'}>Times New Roman</option>
+                            <option value={'Georgia'}>Georgia</option>
+                            <option value={'Garamond'}>Garamond</option>
+                            <option value={'Courier New'}>Courier New</option>
+                            <option value={'Brush Script MT'}>Brush Script MT</option>
+                        </select>
+                    </div>
+                    <div id="chat_fontSize" className={`${css.field}`}>
+                        <span>Font-Size</span>
+                        <div><input onChange={(e)=>SubsSettingsHandler(e,'fontSize')} min="0" defaultValue={100} type="number" className={`${css.input}`}></input>%</div>
+                    </div>
+                    <div id="chat_fontColor" className={`${css.field}`}>
+                        <span>Font-Color</span>
+                        <input onChange={(e)=>SubsSettingsHandler(e,'fontColor')} type="color" defaultValue={"#FFFFFF"} className={`${css.input}`}></input>
+                    </div>
+                    <div id="chat_fontOpacity" className={`${css.field}`}>
+                        <span>Font-Opacity</span>
+                        <input onChange={(e)=>SubsSettingsHandler(e,'fontOpacity')} min="0" max="1" step={0.05} defaultValue={1} type="number" className={`${css.input}`}></input>
+                    </div>
+                    <div id="chat_backgroundColor" className={`${css.field}`}>
+                        <span>Background Color</span>
+                        <input onChange={(e)=>SubsSettingsHandler(e,'backColor')} type="color" defaultValue={"#000000"} className={`${css.input}`}></input>
+                    </div>
+                    <div id="chat_backgroundOpacity" className={`${css.field}`}>
+                        <span>Background Opacity</span>
+                        <input onChange={(e)=>SubsSettingsHandler(e,'backOpacity')} min="0" max="1" step={0.05} defaultValue={0} type="number" className={`${css.input}`}></input>
+                    </div>
+                    <div id="chat_all_messages" className={`${css.field}`}>
+                        <span>View older messages</span>
+                        <div><input onChange={(e)=>SubsSettingsHandler(e,'vertical')} type="checkbox" className={`${css.input}`}></input></div>
+                    </div>
+                    <div id="chat_all_messages" className={`${css.field}`}>
+                        <span>View older messages</span>
+                        <div><input onChange={(e)=>SubsSettingsHandler(e,'vertical')} type="checkbox" className={`${css.input}`}></input></div>
+                    </div>
+                </div>
+            </div>
             <div className={`${css.panel} panel`} id="ratioPanel" data-panel="ratio">
                 <div className={`${css.head} ${css.disFlex} head`} onClick={(e)=>VideoCtrlPanelsHead(e)}>
                     <svg viewBox="0 0 300.000000 300" className={css.arrowSVG}>
@@ -766,24 +845,12 @@ export default function VideoPlayer({subtitles:{table: subsTable,current},setSub
 
             </div>
             <div ref={messagesCont} className={css.messagesCont}>
-                {messages.length >0 && messages.map(message=> 
-                    <div className={`${css.message} message`} >
-                        <span className='sender'>{message.sender} >> </span>
-                        <span className='messageText'>{message.text}</span>
+                {messages.length >0 && messages.map((message,index)=> 
+                    <div key={message.sender+message.value+index} className={`${css.message} message`} >
+                        <span className={`sender`}>{`<${message.user}>`} </span>
+                        <span className={`messageText`}>{message.text}</span>
                     </div>
                 )}
-                <div className={`${css.message} message`} >
-                    <span className='sender'>chris >> </span>
-                    <span className='messageText'>ladfasda df dfagcsx sdcssdsfxdkjlshc;dknl</span>
-                </div>
-                <div className={`${css.message} message`} >
-                    <span className='sender'>chris >> </span>
-                    <span className='messageText'>ladfasda df dfagcsx sdcssdsfxdkjlshc;dknl</span>
-                </div>
-                <div className={`${css.message} message`} >
-                    <span className='sender'>chris >> </span>
-                    <span className='messageText'>ladfasda df dfagcsx sdcssdsfxdkjlshc;dknl</span>
-                </div>
             </div>
             <div id="bot-bar" className={css.bot_bar} ref={botBar} onClick={ClosePanels}>
                 <div id="buttons-bar" className={css.buttons_bar}>
@@ -819,7 +886,7 @@ export default function VideoPlayer({subtitles:{table: subsTable,current},setSub
                                 </g>
                             </svg>
                         </button>
-                        <input ref={chatInput} type='text' className={`chatInput ${css.chatInput}`} placeholder='Egw otan...'/>
+                        <input ref={chatInput} onKeyDown={SendMessage} type='text' className={`chatInput ${css.chatInput}`} placeholder='Egw otan...'/>
                     </div>
                     <button className={css.button} id="subs" onClick={()=>ToggleSubsPanel()} ref={subs} title={`${ current !== 'off' ? subsTable[current].isoLang : "no subs"}`}>
                         <svg viewBox="0 0 36 36" fillOpacity={0.5} className={`${css.svg} ${ current !== 'off' ? css.enabledSVG: ''}`}>

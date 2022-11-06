@@ -10,33 +10,30 @@ import WebTorrent from 'webtorrent';
 import Webplayer from '../../components/webplayer';
 
 export default function Room({cookies}){
-	const [textTracks,setTextTracks] = useState({table: {}, current: 'off'});
-	const [messages,setmessages] = useState([]);
+	const [textTracks,setTextTracks] = useState({subsTable: {}, current: 'off'});
+	const [messages,setMessages] = useState([]);
 	const router = useRouter();
 	const room = cookies.room;
 	const username = cookies.username;
-	let socket;
+	const socket = useRef();
 	let player;
 
 	useEffect(()=>{
-		socket = io(process.env.NEXT_PUBLIC_SERVER, { transports: ['websocket'] });
+		socket.current = io(process.env.NEXT_PUBLIC_SERVER, { transports: ['websocket'] });
 		// const webtorrent = new WebTorrent();
 
 		player = document.querySelector("video");
 		// setInterval(() => {
-		// 	socket.volatile.emit("timedifferencev1",new Date().toISOString().slice(0,-1));
+		// 	socket.current.volatile.emit("timedifferencev1",new Date().toISOString().slice(0,-1));
 		// }, 5000);
 		// setInterval(() => {
-		// 	socket.volatile.emit("timedifferencev2",Date.now());
+		// 	socket.current.volatile.emit("timedifferencev2",Date.now());
 		// }, 5000);
 
 		setInterval(() => {
 			const start =Date.now();
-			// setmessages((previous)=>{
-			// return [...previous,{sender:'egw',text:222}];
-			// })
-			console.log(1111111);
-			// socket.volatile.emit("ping", room ,(serverTime, dateEmited) => {
+
+			// socket.current.volatile.emit("ping", room ,(serverTime, dateEmited) => {
 			// 	const totalDelay = Date.now() - start;
 			// 	const serverDelay = Date.now() - dateEmited;
 			// 	console.log(" totalDelay= ",totalDelay," serverDelay= ", serverDelay, " mycustomTime ",new Date().toISOString().slice(0,-1));
@@ -57,31 +54,31 @@ export default function Room({cookies}){
 		player.addEventListener("pause", SendPauseEvent );
 		function SendPauseEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
-			socket.emit("pause",{ room: room, videoTime: player.currentTime*1000, user: username, dateEmited: Date.now()})
+			socket.current.emit("pause",{ room: room, videoTime: player.currentTime*1000, user: username, dateEmited: Date.now()})
 			console.log("%cpause at "+player.currentTime,"color:red;font-size:2rem;font-weight:bold");
 		}
 		player.addEventListener("play", SendPlayEvent );
 		function SendPlayEvent(e){
 			if( player.serverResp ) { player.serverResp = false; return; }
-			socket.emit("play",{ room: room, videoTime: player.currentTime*1000, user: username, dateEmited: Date.now() })
+			socket.current.emit("play",{ room: room, videoTime: player.currentTime*1000, user: username, dateEmited: Date.now() })
 			player.pause();
 			player.serverResp = true;
 			console.log("%cplay at "+player.currentTime,"color:green;font-size:2rem;font-weight:bold")
 		}
 
-		socket.on("pause", ({ videoTime, user }) =>{
+		socket.current.on("pause", ({ videoTime, user }) =>{
 			player.serverResp = true;
 			player.currentTime = videoTime / 1000;
 			player.pause();
 		});
-		socket.on("play", ({ videoTime, dateEmited, user }) =>{
+		socket.current.on("play", ({ videoTime, dateEmited, user }) =>{
 			// const dateNow =Date.now();
 			// const emitionDelay = dateNow - dateEmited;
 			player.serverResp = true;
 			player.currentTime = videoTime / 1000;
 			player.play();
 		});
-		socket.on("addPlayer_room", ({ user, id, color }) => {
+		socket.current.on("addPlayer_room", ({ user, id, color }) => {
 			console.log({ user, id, color })
 			// let idExists = document.querySelector(`[socketID='${id}']`);
 			// if (idExists) {
@@ -90,13 +87,13 @@ export default function Room({cookies}){
 			// 	AddPlayer({ name: name, id: id, color: color });
 			// }
 		});
-		socket.on("newMessage", ({sender,text}) => {
-			messages.push({sender,text});
+		socket.current.on("newMessage", ({user,text}) => {
+			setMessages(previous=> { return [ {user,text}, ...previous]  });
 		});
-		socket.on("addSub", ({name,url,language,isoLang}) => {
+		socket.current.on("addSub", ({name,url,language,isoLang}) => {
 			AddSubTrack( name, url, isoLang, language, true );
 		});
-		socket.emit("initialize_room", { room: cookies.room, user: username },({ users, subs}) => {
+		socket.current.emit("initialize_room", { room: cookies.room, user: username },({ users, subs}) => {
 			console.log(users,subs);
 			for (const code in subs) {
 				for (const sub in subs[code]) {
@@ -125,8 +122,8 @@ export default function Room({cookies}){
 		document.addEventListener("drop", Drop,true);
 
 		return ()=>{
-			socket.emit("leave_room", { room: cookies.room, user: username});
-			socket.disconnect();
+			socket.current.emit("leave_room", { room: cookies.room, user: username});
+			socket.current.disconnect();
 			document.removeEventListener('dragenter', DragEnter, true);
 			document.removeEventListener('dragover', DragOver, true);
 			document.removeEventListener('dragleave', DragLeave, true);
@@ -160,12 +157,12 @@ export default function Room({cookies}){
 				const json = await request.json();
 				AddSubTrack( json.name, json.link, item.getAttribute("language-iso"), item.getAttribute("language"), true);
 				// console.log("sub added from opensubs: ",json);
-				socket.emit("addSub",{ room: room,name: json.name, url: json.link, language: item.getAttribute("language"), isoLang: item.getAttribute("language-iso")});
+				socket.current.emit("addSub",{ room: room,name: json.name, url: json.link, language: item.getAttribute("language"), isoLang: item.getAttribute("language-iso")});
 			});
 		}
 	}
 	function AddSubTrack( name, url, isoLang = "undefined", language = "undefined", setActive= false){
-		setTextTracks(previous=> { return { table: {...previous.table, [url]: {name: name, url: url, isoLang: isoLang, language: language}}, current: setActive ? url : previous.current } });
+		setTextTracks(previous=> { return { subsTable: {...previous.subsTable, [url]: {name: name, url: url, isoLang: isoLang, language: language}}, current: setActive ? url : previous.current } });
 	}
 	function DragEnter(e) { 
 		e.stopPropagation();
@@ -234,7 +231,7 @@ export default function Room({cookies}){
 		<div id="ping"></div>
 		<div id="offset"></div>
 		<video crossOrigin="anonymous" controls width="500px" height="500px" src="/video.mp4 "></video>
-        <Webplayer socket={socket} room={room} messages={messages} subtitles={textTracks} setSubtitles={setTextTracks}/>
+        <Webplayer socket={socket} room={room} user={username} messages={messages} subtitles={textTracks} setSubtitles={setTextTracks}/>
 		<button id='subsbutton' onClick={()=>FindSubs()}>Find Subs</button>
 		<div className="subscontainer">	</div>
 		</>
