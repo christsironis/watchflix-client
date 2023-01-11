@@ -1,7 +1,7 @@
-body{
+/* body{
     background-size: cover;
     background-image: url(../public/bg.jpg);
-}
+} */
 .boxContainer {
     position: relative;
     width: clamp(200px,80%,1200px);
