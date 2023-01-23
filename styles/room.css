@@ -80,6 +80,6 @@ div.show{
 }
 
 .message.withBackground .sender{
-    font-size: calc(var(--messag-fsize) - 0.4em );
+    font-size: calc(var(--fontSize) - 0.4em );
 
 }

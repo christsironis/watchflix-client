@@ -69,10 +69,14 @@
     flex-direction: column;
     align-items: flex-end;
     padding: 10px;
-    --messag-color: white;
     --messag-backg: black;
-    --messag-fsize: 1.3em;
     --messag-display-time: 10s;
+    --fontFamily: Arial;
+    --fontSize: 1.5em;
+    --fontOpacity: 1;
+    --fontColor: #FFFFFF;
+    --backOpacity: 0;
+    --backColor: 0,0,0;
 }
 .message{
     /* right: -500px; */
@@ -83,7 +87,7 @@
     animation-name: enter, leave;
     animation-fill-mode: forwards, forwards;
     animation-timing-function: ease, ease;
-    font-size: var(--messag-fsize);
+    font-size: var(--fontSize);
 }
 
 .video_controls{

@@ -528,6 +528,59 @@ export default function VideoPlayer({subtitles:{subsTable,current},setSubtitles,
         socket.current.emit("newMessage",{room: room, user: user, text: chatInput.current.value });
         chatInput.current.value = '';
     }
+    function ChatSettingsHandler(e,item){
+        switch (item){
+            case 'fontFamily':
+                messagesCont.current.style.setProperty("--fontFamily", e.target.value);
+                break;
+            case 'fontSize':
+                messagesCont.current.style.setProperty("--fontSize", e.target.value + "em");
+                break;
+            case 'fontOpacity':
+                messagesCont.current.style.setProperty("--fontOpacity", e.target.value);
+                break;
+            case 'fontColor':
+                messagesCont.current.style.setProperty("--fontColor", e.target.value);
+                break;
+            case 'backOpacity':
+                messagesCont.current.style.setProperty("--backOpacity", e.target.value);
+                break;
+            case 'backColor':
+                const r = parseInt(e.target.value.substr(1,2), 16)
+                const g = parseInt(e.target.value.substr(3,2), 16)
+                const b = parseInt(e.target.value.substr(5,2), 16)
+                messagesCont.current.style.setProperty("--backColor", `${r},${g},${b}`);
+                break;
+            case 'vertical':
+                messagesCont.current.style.setProperty("--vertical", e.target.value + "%");
+                messagesCont.current.style.setProperty("--position", "relative");
+                break;
+            case 'horizontal':
+                messagesCont.current.style.setProperty("--horizontal", e.target.value + "%");
+                messagesCont.current.style.setProperty("--position", "relative");
+                break;
+            case 'reset':
+                document.querySelector("chat_fontFamily select").value = 'Arial';
+                document.querySelector("chat_fontSize input").value = '1.5';
+                document.querySelector("chat_fontOpacity input").value = '1';
+                document.querySelector("chat_fontColor input").value = '#FFFFFF';
+                document.querySelector("chat_backgroundOpacity input").value = '0';
+                document.querySelector("chat_backgroundColor input").value = '#000000';
+                document.querySelector("chat_vertical input").value = '87.6094';
+                document.querySelector("chat_horizontal input").value = '0';
+                messagesCont.current.style.setProperty("--fontFamily", 'Arial');
+                messagesCont.current.style.setProperty("--fontSize", "100%");
+                messagesCont.current.style.setProperty("--fontOpacity", '1');
+                messagesCont.current.style.setProperty("--fontColor", '#FFFFFF');
+                messagesCont.current.style.setProperty("--backOpacity", '0');
+                messagesCont.current.style.setProperty("--backColor", `0,0,0`);
+                messagesCont.current.style.setProperty("--vertical", "87.6094%");
+                messagesCont.current.style.setProperty("--horizontal", "0%");
+                messagesCont.current.style.setProperty("--position", "absolute");
+                break;
+        }
+    }
+
     //#endregion
 
     return <>
@@ -754,15 +807,15 @@ export default function VideoPlayer({subtitles:{subsTable,current},setSubtitles,
                         <path d="M2054 2975 c-66 -33 -1365 -1331 -1389 -1387 -19 -48 -19 -128 0 -176 24 -56 1323 -1354 1389 -1387 64 -32 118 -32 183 0 69 35 106 88 111 165 8 111 32 82 -606 723 l-586 587 586 588 c638 640 614 611 606 722 -5 77 -42 130 -111 165 -65 32 -119 32 -183 0z"/>
                         </g>
                     </svg>
-                    <span className={css.itemText}>Subtitles Settings</span>
+                    <span className={css.itemText}>Chat Settings</span>
                 </div>
                 <div id="chatSettings" className={`${css.optionSettings}`}>
                     <div className={`${css.field}`}>
-                        <button onClick={(e)=>SubsSettingsHandler(e,'reset')}>reset</button>
+                        <button onClick={(e)=>ChatSettingsHandler(e,'reset')}>reset</button>
                     </div>
                     <div id="chat_fontFamily" className={`${css.field}`}>
                         <span>Font-Family</span>
-                        <select onChange={(e)=>SubsSettingsHandler(e,'fontFamily')} defaultValue={'Arial'} name="fontFamily" className={`${css.input}`}>
+                        <select onChange={(e)=>ChatSettingsHandler(e,'fontFamily')} defaultValue={'Arial'} name="fontFamily" className={`${css.input}`}>
                             <option value={'Arial'}>Arial</option>
                             <option value={'Verdana'}>Verdana</option>
                             <option value={'Helvetica'}>Helvetica</option>
@@ -777,31 +830,31 @@ export default function VideoPlayer({subtitles:{subsTable,current},setSubtitles,
                     </div>
                     <div id="chat_fontSize" className={`${css.field}`}>
                         <span>Font-Size</span>
-                        <div><input onChange={(e)=>SubsSettingsHandler(e,'fontSize')} min="0" defaultValue={100} type="number" className={`${css.input}`}></input>%</div>
+                        <div><input onChange={(e)=>ChatSettingsHandler(e,'fontSize')} min="0" defaultValue={1.5} max='5' step={0.1} type="number" className={`${css.input}`}></input>em</div>
                     </div>
                     <div id="chat_fontColor" className={`${css.field}`}>
                         <span>Font-Color</span>
-                        <input onChange={(e)=>SubsSettingsHandler(e,'fontColor')} type="color" defaultValue={"#FFFFFF"} className={`${css.input}`}></input>
+                        <input onChange={(e)=>ChatSettingsHandler(e,'fontColor')} type="color" defaultValue={"#FFFFFF"} className={`${css.input}`}></input>
                     </div>
                     <div id="chat_fontOpacity" className={`${css.field}`}>
                         <span>Font-Opacity</span>
-                        <input onChange={(e)=>SubsSettingsHandler(e,'fontOpacity')} min="0" max="1" step={0.05} defaultValue={1} type="number" className={`${css.input}`}></input>
+                        <input onChange={(e)=>ChatSettingsHandler(e,'fontOpacity')} min="0" max="1" step={0.05} defaultValue={1} type="number" className={`${css.input}`}></input>
                     </div>
                     <div id="chat_backgroundColor" className={`${css.field}`}>
                         <span>Background Color</span>
-                        <input onChange={(e)=>SubsSettingsHandler(e,'backColor')} type="color" defaultValue={"#000000"} className={`${css.input}`}></input>
+                        <input onChange={(e)=>ChatSettingsHandler(e,'backColor')} type="color" defaultValue={"#000000"} className={`${css.input}`}></input>
                     </div>
                     <div id="chat_backgroundOpacity" className={`${css.field}`}>
                         <span>Background Opacity</span>
-                        <input onChange={(e)=>SubsSettingsHandler(e,'backOpacity')} min="0" max="1" step={0.05} defaultValue={0} type="number" className={`${css.input}`}></input>
+                        <input onChange={(e)=>ChatSettingsHandler(e,'backOpacity')} min="0" max="1" step={0.05} defaultValue={0} type="number" className={`${css.input}`}></input>
                     </div>
                     <div id="chat_all_messages" className={`${css.field}`}>
                         <span>View older messages</span>
-                        <div><input onChange={(e)=>SubsSettingsHandler(e,'vertical')} type="checkbox" className={`${css.input}`}></input></div>
+                        <div><input onChange={(e)=>ChatSettingsHandler(e,'vertical')} type="checkbox" className={`${css.input}`}></input></div>
                     </div>
                     <div id="chat_all_messages" className={`${css.field}`}>
                         <span>View older messages</span>
-                        <div><input onChange={(e)=>SubsSettingsHandler(e,'vertical')} type="checkbox" className={`${css.input}`}></input></div>
+                        <div><input onChange={(e)=>ChatSettingsHandler(e,'vertical')} type="checkbox" className={`${css.input}`}></input></div>
                     </div>
                 </div>
             </div>
